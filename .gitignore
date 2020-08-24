@@ -6,6 +6,7 @@
 *.dll
 *.exe
 *.pdb
+*.config
 *.dll.config
 *.cache
 *.suo
