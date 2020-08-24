@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "serviceTest": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
