@@ -1,5 +1,5 @@
-# sali-site
-powered by asp .net core web mvc
+# robosali
+powered by .net core 3.0
 
 # description
-so i started this project in order to justify the domain i bought
+so this project is an attempt to make a twitter bot with ai and capable of doing cool stuff
