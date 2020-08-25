@@ -1,4 +1,5 @@
-﻿using OAuth;
+﻿using Newtonsoft.Json;
+using OAuth;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,7 +45,7 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Make an API request with OAuth 1.0
         /// </summary>
-        public async Task requestAPIOAuthAsync(string url, Method method)
+        public async Task<string> requestAPIOAuthAsync(string url, Method method)
         {
             //Generate OAuthRequest data (library used: OAuth.DotNetCore from Robert Hargreaves)
             OAuthRequest client = new OAuthRequest
@@ -70,6 +71,8 @@ namespace TwitterAPI_NETCore
                     request.Headers.TryAddWithoutValidation("Authorization", auth);
 
                     var response = await httpClient.SendAsync(request);
+
+                    return response.Content.ReadAsStringAsync().Result;
                 }
             }
 
@@ -78,7 +81,7 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Make an API request with OAuth 1.0 and body parameters (defined key:value in dictionary)
         /// </summary>
-        public async Task requestAPIOAuthAsync(string url, Method method, Dictionary<string, string> body)
+        public async Task<string> requestAPIOAuthAsync(string url, Method method, Dictionary<string, object> body)
         {
             //Generate OAuthRequest data (library used: OAuth.DotNetCore from Robert Hargreaves)
             OAuthRequest client = new OAuthRequest
@@ -103,16 +106,16 @@ namespace TwitterAPI_NETCore
                 {
                     request.Headers.TryAddWithoutValidation("Authorization", auth);
 
-                    var parameters = new List<KeyValuePair<string, string>>();
-
                     var multipartFormDataContent = new MultipartFormDataContent();
 
                     foreach (var item in body)
-                        multipartFormDataContent.Add(new StringContent(item.Value), string.Format("\"{0}\"", item.Key));
+                        multipartFormDataContent.Add(new StringContent(item.Value.ToString()), string.Format("\"{0}\"", item.Key));
 
                     request.Content = multipartFormDataContent;
 
                     var response = await httpClient.SendAsync(request);
+
+                    return response.Content.ReadAsStringAsync().Result;
                 }
             }
         }

@@ -20,8 +20,15 @@ namespace testConsole
             var task = new Tasks(consumerKey, consumerSecret, tokenValue, tokenSecret);
 
             //Execute a task
-            await task.post_tweet("esto es una prueba 4567");
 
-        }
+            //var response = await task.post_tweet("testando");
+            //var response = await task.get_mentions();
+            //var response = await task.get_last_mention();
+            ///var response = await task.get_tweets();
+            //var response = await task.get_replies();
+            //var response = await task.post_reply_tweet("esto es un reply", "1297603583387541509");
+            var response = await task.get_replies_data();
+
+    }
     }
 }
