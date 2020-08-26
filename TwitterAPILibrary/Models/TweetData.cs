@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TwitterAPI_NETCore.Models
 {
@@ -32,11 +34,11 @@ namespace TwitterAPI_NETCore.Models
             }
         }
 
-        public string username
+        public UserData user
         {
             get
             {
-                return Regex.Replace(tweet_data["user"]["screen_name"].ToString(), @"\@\w+\b", match => "").Trim();
+                return new UserData(tweet_data);
             }
         }
 
@@ -44,7 +46,28 @@ namespace TwitterAPI_NETCore.Models
         {
             get
             {
-                return tweet_data["text"].ToString();
+                return Regex.Replace(tweet_data["text"].ToString(), @"\@\w+\b", match => "").Trim();
+            }
+        }
+
+        public TweetData replying_to
+        {
+            get
+            {
+                var id = tweet_data["in_reply_to_status_id"].ToString();
+
+                if (id != "")
+                    return Tasks.get_tweet_data_static(tweet_data["in_reply_to_status_id"].ToString());
+                else
+                    return null;
+            }
+        }
+
+        public List<TweetData> replies
+        {
+            get
+            {
+                return Tasks.get_replies_of_tweet_static(this);
             }
         }
     }

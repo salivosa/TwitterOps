@@ -6,7 +6,7 @@ namespace testConsole
 {
     class Program
     {
-        static async System.Threading.Tasks.Task Main(string[] args)
+        static void Main(string[] args)
         {
             //Example
 
@@ -21,15 +21,17 @@ namespace testConsole
 
             //Execute a task
 
-            //var response = await task.post_tweet("testando");
-            //var response = await task.get_mentions();
-            //var response = await task.get_last_mention();
+            //var response = await task.post_tweet_async("probandoooo1234");
+            //var response = await task.get_mentioned_tweets_async();
+            //var response = await task.get_mentioned_tweets();
             ///var response = await task.get_tweets();
             //var response = await task.get_replies();
-            //var response = await task.post_reply_tweet("esto es un reply", "1297603583387541509");
             //var response = await task.get_replies_data();
-            var response = task.get_last_thread();
-            //var response = await task.get_tweet_data("1298444075834712066");
+            //var response = await task.get_last_thread();
+            //var test = task.get_replies_of_tweet(response);
+            //var response = task.get_mentioned_tweets();
+            //var response = task.get_tweets_of_timeline();
+            var response = task.last_mention_was_replied();
 
     }
     }
