@@ -27,7 +27,9 @@ namespace testConsole
             ///var response = await task.get_tweets();
             //var response = await task.get_replies();
             //var response = await task.post_reply_tweet("esto es un reply", "1297603583387541509");
-            var response = await task.get_replies_data();
+            //var response = await task.get_replies_data();
+            var response = task.get_last_thread();
+            //var response = await task.get_tweet_data("1298444075834712066");
 
     }
     }

@@ -15,12 +15,12 @@ namespace TwitterAPI_NETCore
     public class APIHandler
     {
         //API keys of Twitter App
-        public string consumerKey { get; set; }
-        public string consumerSecret { get; set; }
+        private string consumerKey { get; set; }
+        private string consumerSecret { get; set; }
 
         //Tokens of user (can be genenerated and obtained by twurl)
-        public string tokenValue { get; set; }
-        public string tokenSecret { get; set; }
+        private string tokenValue { get; set; }
+        private string tokenSecret { get; set; }
 
         //Enum of Methods used in Requests
         public enum Method
