@@ -6,7 +6,6 @@
 *.dll
 *.exe
 *.pdb
-*.config
 *.dll.config
 *.cache
 *.suo
@@ -75,4 +74,3 @@ _[Ss]cripts
 *.ncrunchsolution
 *.dot[Cc]over
 *.lock
-testConsole/App.config

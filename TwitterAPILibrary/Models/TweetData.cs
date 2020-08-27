@@ -22,7 +22,12 @@ namespace TwitterAPI_NETCore.Models
         { 
             get 
             {
-                return tweet_data["id"].ToString();
+                var data = tweet_data["id"];
+
+                if (data != null)
+                    return data.ToString();
+                else
+                    return "";
             } 
         }
 

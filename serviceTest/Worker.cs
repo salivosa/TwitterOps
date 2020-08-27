@@ -30,23 +30,32 @@ namespace serviceTest
 
             //Load module
             task = new Tasks(consumerKey, consumerSecret, tokenValue, tokenSecret);
+
+            _logger.LogInformation(DateTimeOffset.Now + " - Worker Inicializado!");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                //Execute a task
-
-                var response = task.IsLastMentionRepliedByLoggedUser();
-
-                if (!response.Item1)
+                try
                 {
-                    var tweet = task.PostReplyTweet(response.Item2.tweet_message, response.Item2);
-                    _logger.LogInformation(DateTimeOffset.Now + " - Respuesta hecha a usuario @" + tweet.user.username + ": " + tweet.tweet_message);
+                    //Execute a task
+
+                    var response = task.IsLastMentionRepliedByLoggedUser();
+
+                    if (!response.Item1)
+                    {
+                        var tweet = await task.PostReplyTweetAsync(response.Item2.tweet_message, response.Item2);
+                        _logger.LogInformation(DateTimeOffset.Now + " - Respuesta hecha a usuario @" + tweet.user.username + ": " + tweet.tweet_message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogInformation(DateTimeOffset.Now + " - Ocurrió un error:\n\n" + ex.ToString());
                 }
                     
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(1500, stoppingToken);
             }
         }
     }

@@ -21,10 +21,14 @@ namespace testConsole
 
             //Execute a task
 
-            var response = task.IsLastMentionRepliedByLoggedUser();
-
-            if (!response.Item1)
-                task.PostReplyTweet(response.Item2.tweet_message, response.Item2);
+            try
+            {
+                var response = task.GetRepliesOfTweetByID("1298843853160681472");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
 
     }
     }

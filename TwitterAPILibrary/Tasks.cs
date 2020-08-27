@@ -589,7 +589,7 @@ namespace TwitterAPI_NETCore
 
             var mention_tweets = GetMentionedTweetsStatic();
 
-            var union_list = tl_tweets.Union(mention_tweets).ToList();
+            var union_list = tl_tweets.Union(mention_tweets).GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
 
             var get_replies = union_list.Where(x => x.replying_to != null && x.replying_to.tweet_id == tweet.tweet_id).ToList();
 
@@ -605,7 +605,7 @@ namespace TwitterAPI_NETCore
 
             var mention_tweets = await GetMentionedTweetsAsync();
 
-            var union_list = tl_tweets.Union(mention_tweets).ToList();
+            var union_list = tl_tweets.Union(mention_tweets).GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
 
             var get_replies = union_list.Where(x => x.replying_to != null && x.replying_to.tweet_id == tweet.tweet_id).ToList();
 
@@ -621,7 +621,7 @@ namespace TwitterAPI_NETCore
 
             var mention_tweets = GetMentionedTweets();
 
-            var union_list = tl_tweets.Union(mention_tweets).ToList();
+            var union_list = tl_tweets.Union(mention_tweets).GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
 
             var get_replies = union_list.Where(x => x.replying_to != null && x.replying_to.tweet_id == tweet_id).ToList();
 
@@ -637,7 +637,7 @@ namespace TwitterAPI_NETCore
 
             var mention_tweets = GetMentionedTweetsStatic();
 
-            var union_list = tl_tweets.Union(mention_tweets).ToList();
+            var union_list = tl_tweets.Union(mention_tweets).GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
 
             var get_replies = union_list.Where(x => x.replying_to != null && x.replying_to.tweet_id == tweet_id).ToList();
 
@@ -653,7 +653,7 @@ namespace TwitterAPI_NETCore
 
             var mention_tweets = await GetMentionedTweetsAsync();
 
-            var union_list = tl_tweets.Union(mention_tweets).ToList();
+            var union_list = tl_tweets.Union(mention_tweets).GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
 
             var get_replies = union_list.Where(x => x.replying_to != null && x.replying_to.tweet_id == tweet_id).ToList();
 
