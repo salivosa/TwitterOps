@@ -57,7 +57,7 @@ namespace TwitterAPI_NETCore.Models
                 var id = tweet_data["in_reply_to_status_id"].ToString();
 
                 if (id != "")
-                    return Tasks.get_tweet_data_static(tweet_data["in_reply_to_status_id"].ToString());
+                    return Tasks.GetTweetDataStatic(tweet_data["in_reply_to_status_id"].ToString());
                 else
                     return null;
             }
@@ -67,7 +67,7 @@ namespace TwitterAPI_NETCore.Models
         {
             get
             {
-                return Tasks.get_replies_of_tweet_static(this);
+                return Tasks.GetRepliesOfTweetStatic(this);
             }
         }
     }

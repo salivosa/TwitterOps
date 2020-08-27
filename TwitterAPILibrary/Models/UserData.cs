@@ -11,7 +11,10 @@ namespace TwitterAPI_NETCore.Models
         private JToken user_data { get; set; }
         public UserData(JObject user_data)
         {
-            this.user_data = user_data["user"];
+            if(user_data.ContainsKey("user"))
+                this.user_data = user_data["user"];
+            else
+                this.user_data = user_data;
         }
 
         public string user_id

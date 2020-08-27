@@ -13,11 +13,15 @@ namespace TwitterAPI_NETCore
 {
     public class Tasks
     {
-        private static APIHandler api_handler { get; set; }
+        private static APIHandler APIHandle { get; set; }
+
+        private static UserData LoggedUser { get; set; }
 
         public Tasks(string consumerKey, string consumerSecret, string tokenValue, string tokenSecret)
         {
-            api_handler = new APIHandler(consumerKey, consumerSecret, tokenValue, tokenSecret);
+            APIHandle = new APIHandler(consumerKey, consumerSecret, tokenValue, tokenSecret);
+            LoggedUser = GetLoggedUser();
+
         }
 
         // ----------------------------------------------------------- Twitter API v1.1 calls -----------------------------------------------------------  //
@@ -25,9 +29,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get tweet data based of tweet_id (status_id)
         /// </summary>
-        public TweetData get_tweet_data(string tweet_id)
+        public TweetData GetTweetData(string tweet_id)
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
             var tweet_data = JObject.Parse(response.Result);
 
             var tweet = new TweetData(tweet_data);
@@ -38,9 +42,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get tweet data based of tweet_id (status_id)
         /// </summary>
-        public static TweetData get_tweet_data_static(string tweet_id)
+        public static TweetData GetTweetDataStatic(string tweet_id)
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
             var tweet_data = JObject.Parse(response.Result);
 
             var tweet = new TweetData(tweet_data);
@@ -51,9 +55,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get tweet data based of tweet_id (status_id)
         /// </summary>
-        public async Task<TweetData> get_tweet_data_async(string tweet_id)
+        public async Task<TweetData> GetTweetDataAsync(string tweet_id)
         {
-            var response = await api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
             var tweet_data = JObject.Parse(response);
 
             var tweet = new TweetData(tweet_data);
@@ -62,11 +66,44 @@ namespace TwitterAPI_NETCore
         }
 
         /// <summary>
+        /// Get UserData of Logged User in API credentials
+        /// </summary>
+        public UserData GetLoggedUser()
+        {
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/account/verify_credentials.json", APIHandler.Method.GET);
+            var user_data = JObject.Parse(response.Result);
+
+            return new UserData(user_data);
+        }
+
+        /// <summary>
+        /// Get UserData of Logged User in API credentials
+        /// </summary>
+        public static UserData GetLoggedUserStatic()
+        {
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/account/verify_credentials.json", APIHandler.Method.GET);
+            var user_data = JObject.Parse(response.Result);
+
+            return new UserData(user_data);
+        }
+
+        /// <summary>
+        /// Get UserData of Logged User in API credentials
+        /// </summary>
+        public async Task<UserData> GetLoggedUserAsync()
+        {
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/account/verify_credentials.json", APIHandler.Method.GET);
+            var user_data = JObject.Parse(response);
+
+            return new UserData(user_data);
+        }
+
+        /// <summary>
         /// Get tweets from tl and return a list of TweetData
         /// </summary>
-        public List<TweetData> get_tweets_of_timeline()
+        public List<TweetData> GetTweetsOfTimeline()
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false", APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false", APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -76,9 +113,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get tweets from tl and return a list of TweetData
         /// </summary>
-        public static List<TweetData> get_tweets_of_timeline_static()
+        public static List<TweetData> GetTweetsOfTimelineStatic()
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false", APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false", APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -88,9 +125,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get tweets from tl and return a list of TweetData
         /// </summary>
-        public async Task<List<TweetData>> get_tweets_of_timeline_async()
+        public async Task<List<TweetData>> GetTweetsOfTimelineAsync()
         {
-            var response = await api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false", APIHandler.Method.GET);
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false", APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -100,12 +137,12 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Post a tweet passing string with text
         /// </summary>
-        public TweetData post_tweet(string text)
+        public TweetData PostTweet(string text)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
 
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response.Result));
 
@@ -115,12 +152,12 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Post a tweet passing string with text
         /// </summary>
-        public static TweetData post_tweet_static(string text)
+        public static TweetData PostTweetStatic(string text)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
 
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response.Result));
 
@@ -130,12 +167,12 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Post a tweet passing string with text
         /// </summary>
-        public async Task<TweetData> post_tweet_async(string text)
+        public async Task<TweetData> PostTweetAsync(string text)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
 
-            var response = await api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response));
 
@@ -145,14 +182,14 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Reply a tweet passing string with text and TweetData instance
         /// </summary>
-        public TweetData post_reply_tweet(string text, TweetData tweet)
+        public TweetData PostReplyTweet(string text, TweetData tweet)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet.tweet_id);
             parameters.Add("auto_populate_reply_metadata", true);
 
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response.Result));
 
@@ -162,14 +199,14 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Reply a tweet passing string with text and TweetData instance
         /// </summary>
-        public static TweetData post_reply_tweet_static(string text, TweetData tweet)
+        public static TweetData PostReplyTweetStatic(string text, TweetData tweet)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet.tweet_id);
             parameters.Add("auto_populate_reply_metadata", true);
 
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response.Result));
 
@@ -179,14 +216,14 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Reply a tweet passing string with text and TweetData instance
         /// </summary>
-        public async Task<TweetData> post_reply_tweet_async(string text, TweetData tweet)
+        public async Task<TweetData> PostReplyTweetAsync(string text, TweetData tweet)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet.tweet_id);
             parameters.Add("auto_populate_reply_metadata", true);
 
-            var response = await api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response));
 
@@ -196,14 +233,14 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Reply a tweet passing string with text and tweet_id (status_id)
         /// </summary>
-        public static TweetData post_reply_tweet(string text, string tweet_id)
+        public static TweetData PostReplyTweet(string text, string tweet_id)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet_id);
             parameters.Add("auto_populate_reply_metadata", true);
 
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response.Result));
 
@@ -213,14 +250,14 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Reply a tweet passing string with text and tweet_id (status_id)
         /// </summary>
-        public static TweetData post_reply_tweet_static(string text, string tweet_id)
+        public static TweetData PostReplyTweetStatic(string text, string tweet_id)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet_id);
             parameters.Add("auto_populate_reply_metadata", true);
 
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response.Result));
 
@@ -230,14 +267,14 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Reply a tweet passing string with text and tweet_id (status_id)
         /// </summary>
-        public async Task<TweetData> post_reply_tweet_async(string text, string tweet_id)
+        public async Task<TweetData> PostReplyTweetAsync(string text, string tweet_id)
         {
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet_id);
             parameters.Add("auto_populate_reply_metadata", true);
 
-            var response = await api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json", APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response));
 
@@ -248,9 +285,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get last tweets in which user was mentioned and returns a TweetReply instance
         /// </summary>
-        public List<TweetData> get_mentioned_tweets()
+        public List<TweetData> GetMentionedTweets()
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json", APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json", APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -260,9 +297,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get last tweets in which user was mentioned and returns a TweetReply instance
         /// </summary>
-        public static List<TweetData> get_mentioned_tweets_static()
+        public static List<TweetData> GetMentionedTweetsStatic()
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json", APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json", APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -272,9 +309,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get last tweets in which user was mentioned and returns a TweetReply instance
         /// </summary>
-        public async Task<List<TweetData>> get_mentioned_tweets_async()
+        public async Task<List<TweetData>> GetMentionedTweetsAsync()
         {
-            var response = await api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json", APIHandler.Method.GET);
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json", APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -284,9 +321,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get last tweets in which user was mentioned with a count parameter and returns a TweetReply instance
         /// </summary>
-        public List<TweetData> get_mentioned_tweets(int count)
+        public List<TweetData> GetMentionedTweets(int count)
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=" + count, APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=" + count, APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -296,9 +333,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get last tweets in which user was mentioned with a count parameter and returns a TweetReply instance
         /// </summary>
-        public static List<TweetData> get_mentioned_tweets_static(int count)
+        public static List<TweetData> GetMentionedTweetsStatic(int count)
         {
-            var response = api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=" + count, APIHandler.Method.GET);
+            var response = APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=" + count, APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -308,9 +345,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get last tweets in which user was mentioned with a count parameter and returns a TweetReply instance
         /// </summary>
-        public async Task<List<TweetData>> get_mentioned_tweets_async(int count)
+        public async Task<List<TweetData>> GetMentionedTweetsAsync(int count)
         {
-            var response = await api_handler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=" + count, APIHandler.Method.GET);
+            var response = await APIHandle.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?count=" + count, APIHandler.Method.GET);
 
             var tweet_data = JArray.Parse(response).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
@@ -320,9 +357,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Check if last mention to user was replied
         /// </summary>
-        public Tuple<bool,TweetData> last_mention_was_replied()
+        public Tuple<bool, TweetData> IsLastMentionReplied()
         {
-            var last_mention = get_mentioned_tweets(1)[0];
+            var last_mention = GetMentionedTweets(1)[0];
             var check = last_mention.replies.Count != 0;
 
             var result = new Tuple<bool, TweetData>(check, last_mention);
@@ -333,9 +370,9 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Check if last mention to user was replied
         /// </summary>
-        public static Tuple<bool, TweetData> last_mention_was_replied_static()
+        public static Tuple<bool, TweetData> IsLastMentionRepliedStatic()
         {
-            var last_mention = get_mentioned_tweets_static(1)[0];
+            var last_mention = GetMentionedTweetsStatic(1)[0];
             var check = last_mention.replies != null;
 
             var result = new Tuple<bool, TweetData>(check, last_mention);
@@ -346,10 +383,181 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Check if last mention to user was replied
         /// </summary>
-        public async Task<Tuple<bool, TweetData>> last_mention_was_replied_async()
+        public async Task<Tuple<bool, TweetData>> IsLastMentionRepliedAsync()
         {
-            var last_mention = await get_mentioned_tweets_async(1);
+            var last_mention = await GetMentionedTweetsAsync(1);
             var check = last_mention[0].replies != null;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention[0]);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by logged user in API credentials
+        /// </summary>
+        public Tuple<bool, TweetData> IsLastMentionRepliedByLoggedUser()
+        {
+            var last_mention = GetMentionedTweets(1)[0];
+
+            var data = last_mention.replies;
+
+            var check = data.Count != 0;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == LoggedUser.user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by logged user in API credentials
+        /// </summary>
+        public static Tuple<bool, TweetData> IsLastMentionRepliedByLoggedUserStatic()
+        {
+            var last_mention = GetMentionedTweetsStatic(1)[0];
+
+            var data = last_mention.replies;
+
+            var check = data.Count != 0;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == LoggedUser.user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by logged user in API credentials
+        /// </summary>
+        public async Task<Tuple<bool, TweetData>> IsLastMentionRepliedByLoggedUserAsync(string user_id)
+        {
+            var last_mention = await GetMentionedTweetsAsync(1);
+
+            var data = last_mention[0].replies;
+
+            var check = data != null;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == LoggedUser.user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention[0]);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by user using user_id parameter
+        /// </summary>
+        public Tuple<bool, TweetData> IsLastMentionRepliedByUser(string user_id)
+        {
+            var last_mention = GetMentionedTweets(1)[0];
+
+            var data = last_mention.replies;
+
+            var check = data.Count != 0;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by user using user_id parameter
+        /// </summary>
+        public static Tuple<bool, TweetData> IsLastMentionRepliedByUserStatic(string user_id)
+        {
+            var last_mention = GetMentionedTweetsStatic(1)[0];
+
+            var data = last_mention.replies;
+
+            var check = data.Count != 0;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by user using user_id parameter
+        /// </summary>
+        public async Task<Tuple<bool, TweetData>> IsLastMentionRepliedByUserAsync(string user_id)
+        {
+            var last_mention = await GetMentionedTweetsAsync(1);
+
+            var data = last_mention[0].replies;
+
+            var check = data != null;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention[0]);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by user using UserData instance
+        /// </summary>
+        public Tuple<bool, TweetData> IsLastMentionRepliedByUser(UserData user)
+        {
+            var last_mention = GetMentionedTweets(1)[0];
+
+            var data = last_mention.replies;
+
+            var check = data.Count != 0;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == user.user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by user using UserData instance
+        /// </summary>
+        public static Tuple<bool, TweetData> IsLastMentionRepliedByUserStatic(UserData user)
+        {
+            var last_mention = GetMentionedTweetsStatic(1)[0];
+
+            var data = last_mention.replies;
+
+            var check = data.Count != 0;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == user.user_id).Count() > 0;
+
+            var result = new Tuple<bool, TweetData>(check, last_mention);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Check if last mention to user was replied by user using UserData instance
+        /// </summary>
+        public async Task<Tuple<bool, TweetData>> IsLastMentionRepliedByUserAsync(UserData user)
+        {
+            var last_mention = await GetMentionedTweetsAsync(1);
+
+            var data = last_mention[0].replies;
+
+            var check = data != null;
+
+            if (check)
+                check = data.Where(w => w.user.user_id == user.user_id).Count() > 0;
 
             var result = new Tuple<bool, TweetData>(check, last_mention[0]);
 
@@ -359,11 +567,11 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get replies to tweet
         /// </summary>
-        public List<TweetData> get_replies_of_tweet(TweetData tweet)
+        public List<TweetData> GetRepliesOfTweet(TweetData tweet)
         {
-            var tl_tweets = get_tweets_of_timeline();
+            var tl_tweets = GetTweetsOfTimeline();
 
-            var mention_tweets = get_mentioned_tweets();
+            var mention_tweets = GetMentionedTweets();
 
             var union_list = tl_tweets.Union(mention_tweets).ToList();
 
@@ -375,11 +583,11 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get replies to tweet
         /// </summary>
-        public static List<TweetData> get_replies_of_tweet_static(TweetData tweet)
+        public static List<TweetData> GetRepliesOfTweetStatic(TweetData tweet)
         {
-            var tl_tweets = get_tweets_of_timeline_static();
+            var tl_tweets = GetTweetsOfTimelineStatic();
 
-            var mention_tweets = get_mentioned_tweets_static();
+            var mention_tweets = GetMentionedTweetsStatic();
 
             var union_list = tl_tweets.Union(mention_tweets).ToList();
 
@@ -391,11 +599,11 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get replies to tweet
         /// </summary>
-        public async Task<List<TweetData>> get_replies_of_tweet_async(TweetData tweet)
+        public async Task<List<TweetData>> GetRepliesOfTweetAsync(TweetData tweet)
         {
-            var tl_tweets = await get_tweets_of_timeline_async();
+            var tl_tweets = await GetTweetsOfTimelineAsync();
 
-            var mention_tweets = await get_mentioned_tweets_async();
+            var mention_tweets = await GetMentionedTweetsAsync();
 
             var union_list = tl_tweets.Union(mention_tweets).ToList();
 
@@ -407,11 +615,11 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get replies to tweet
         /// </summary>
-        public List<TweetData> get_replies_of_tweet_by_id(string tweet_id)
+        public List<TweetData> GetRepliesOfTweetByID(string tweet_id)
         {
-            var tl_tweets = get_tweets_of_timeline();
+            var tl_tweets = GetTweetsOfTimeline();
 
-            var mention_tweets = get_mentioned_tweets();
+            var mention_tweets = GetMentionedTweets();
 
             var union_list = tl_tweets.Union(mention_tweets).ToList();
 
@@ -423,11 +631,11 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get replies to tweet
         /// </summary>
-        public static List<TweetData> get_replies_of_tweet_by_id_static(string tweet_id)
+        public static List<TweetData> GetRepliesOfTweetByIDStatic(string tweet_id)
         {
-            var tl_tweets = get_tweets_of_timeline_static();
+            var tl_tweets = GetTweetsOfTimelineStatic();
 
-            var mention_tweets = get_mentioned_tweets_static();
+            var mention_tweets = GetMentionedTweetsStatic();
 
             var union_list = tl_tweets.Union(mention_tweets).ToList();
 
@@ -439,11 +647,11 @@ namespace TwitterAPI_NETCore
         /// <summary>
         /// Get replies to tweet
         /// </summary>
-        public async Task<List<TweetData>> get_replies_of_tweet_by_id_async(string tweet_id)
+        public async Task<List<TweetData>> GetRepliesOfTweetByIDAsync(string tweet_id)
         {
-            var tl_tweets = await get_tweets_of_timeline_async();
+            var tl_tweets = await GetTweetsOfTimelineAsync();
 
-            var mention_tweets = await get_mentioned_tweets_async();
+            var mention_tweets = await GetMentionedTweetsAsync();
 
             var union_list = tl_tweets.Union(mention_tweets).ToList();
 

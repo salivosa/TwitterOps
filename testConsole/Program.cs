@@ -21,17 +21,10 @@ namespace testConsole
 
             //Execute a task
 
-            //var response = await task.post_tweet_async("probandoooo1234");
-            //var response = await task.get_mentioned_tweets_async();
-            //var response = await task.get_mentioned_tweets();
-            ///var response = await task.get_tweets();
-            //var response = await task.get_replies();
-            //var response = await task.get_replies_data();
-            //var response = await task.get_last_thread();
-            //var test = task.get_replies_of_tweet(response);
-            //var response = task.get_mentioned_tweets();
-            //var response = task.get_tweets_of_timeline();
-            var response = task.last_mention_was_replied();
+            var response = task.IsLastMentionRepliedByLoggedUser();
+
+            if (!response.Item1)
+                task.PostReplyTweet(response.Item2.tweet_message, response.Item2);
 
     }
     }
