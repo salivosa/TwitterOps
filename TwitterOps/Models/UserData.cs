@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace TwitterAPI_NETCore.Models
+namespace TwitterOps.Models
 {
     public class UserData
     {
@@ -57,11 +58,51 @@ namespace TwitterAPI_NETCore.Models
             }
         }
 
+        public List<UserData> follows
+        {
+            get
+            {
+                return Tasks.GetUserFollowingsStatic(this);
+            }
+        }
+
+        public int follows_count
+        {
+            get
+            {
+                return int.Parse(user_data["friends_count"].ToString());
+            }
+        }
+
+        public List<UserData> followers
+        {
+            get
+            {
+                return Tasks.GetUserFollowersStatic(this);
+            }
+        }
+
+        public int followers_count
+        {
+            get
+            {
+                return int.Parse(user_data["followers_count"].ToString());
+            }
+        }
+
         public bool is_protected
         {
             get
             {
                 return user_data["protected"].ToString().ToLower() == "true";
+            }
+        }
+
+        public bool is_shadowbanned
+        {
+            get
+            {
+                return Tasks.IsUserShadowbannedStatic(this);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
-using TwitterAPI_NETCore;
+using TwitterOps;
 using System.Configuration;
+using System.Linq;
 
 namespace testConsole
 {
@@ -21,14 +22,11 @@ namespace testConsole
 
             //Execute a task
 
-            try
-            {
-                var response = task.GetRepliesOfTweetByID("1298843853160681472");
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            var user = task.GetUserByScreenName("salikatsu");
+
+            //var get_shadowbanned_list = user.followers.Where(w=> w.is_protected).ToList();
+
+            //var response = task.GetFollowersOfUser(user);
 
     }
     }

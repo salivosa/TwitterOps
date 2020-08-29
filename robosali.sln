@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "serviceTest", "serviceTest\serviceTest.csproj", "{0151D6EE-F92A-4CAF-A537-EB1CA49D539B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitterAPI_NETCore", "TwitterAPILibrary\TwitterAPI_NETCore.csproj", "{83D1738B-C766-418F-92CD-9228C02CC046}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitterOps", "TwitterOps\TwitterOps.csproj", "{83D1738B-C766-418F-92CD-9228C02CC046}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testConsole", "testConsole\testConsole.csproj", "{1B82EAD4-FB40-4B33-913D-8736E7C24652}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testConsole", "testConsole\testConsole.csproj", "{1B82EAD4-FB40-4B33-913D-8736E7C24652}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

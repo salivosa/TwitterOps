@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TwitterAPILibrary\TwitterAPI_NETCore.csproj" />
+    <ProjectReference Include="..\TwitterOps\TwitterOps.csproj" />
   </ItemGroup>
 </Project>

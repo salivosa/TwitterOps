@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TwitterAPI_NETCore.Models
+namespace TwitterOps.Models
 {
     public class TweetData
     {

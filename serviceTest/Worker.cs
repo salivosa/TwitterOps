@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TwitterAPI_NETCore;
+using TwitterOps;
 
 namespace serviceTest
 {
@@ -40,8 +40,6 @@ namespace serviceTest
             {
                 try
                 {
-                    //Execute a task
-
                     var response = task.IsLastMentionRepliedByLoggedUser();
 
                     if (!response.Item1)
