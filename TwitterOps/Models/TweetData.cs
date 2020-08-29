@@ -18,6 +18,14 @@ namespace TwitterOps.Models
             this.tweet_data = tweet_data;
         }
 
+        public string url
+        {
+            get
+            {
+                return "https://twitter.com/" + user.username + "/status/" + tweet_id;
+            }
+        }
+
         public string tweet_id 
         { 
             get 
@@ -35,7 +43,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return DateTime.ParseExact(tweet_data["created_at"].ToString(), "ddd MMM dd HH:mm:ss +ffff yyyy", new CultureInfo("en-US"));
+                return DateTime.ParseExact(tweet_data["created_at"].ToString(), "ddd MMM dd HH:mm:ss +ffff yyyy", new CultureInfo("en-US")).ToLocalTime();
             }
         }
 
@@ -62,7 +70,7 @@ namespace TwitterOps.Models
                 var id = tweet_data["in_reply_to_status_id"].ToString();
 
                 if (id != "")
-                    return Tasks.GetTweetDataStatic(tweet_data["in_reply_to_status_id"].ToString());
+                    return Operations.GetTweetByIdStatic(tweet_data["in_reply_to_status_id"].ToString());
                 else
                     return null;
             }
@@ -72,7 +80,39 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Tasks.GetRepliesOfTweetStatic(this);
+                return Operations.GetRepliesOfTweetStatic(this);
+            }
+        }
+
+        public int replies_count
+        {
+            get
+            {
+                return int.Parse(Operations.GetTweetPublicMetricsStatic(this)["reply_count"].ToString());
+            }
+        }
+
+        public int like_count
+        {
+            get
+            {
+                return int.Parse(tweet_data["favorite_count"].ToString());
+            }
+        }
+
+        public int retweet_count
+        {
+            get
+            {
+                return int.Parse(tweet_data["retweet_count"].ToString());
+            }
+        }
+
+        public int quote_count
+        {
+            get
+            {
+                return int.Parse(Operations.GetTweetPublicMetricsStatic(this)["quote_count"].ToString());
             }
         }
     }

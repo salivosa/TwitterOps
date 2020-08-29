@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -12,21 +13,18 @@ using TwitterOps.Models;
 
 namespace TwitterOps
 {
-    public class Tasks
+    public class Operations
     {
         private static APIHandler APIHandler { get; set; }
 
         private static UserData LoggedUser { get; set; }
 
-        public Tasks(string consumerKey, string consumerSecret, string tokenValue, string tokenSecret)
+        public Operations(string consumerKey, string consumerSecret, string tokenValue, string tokenSecret)
         {
             APIHandler = new APIHandler(consumerKey, consumerSecret, tokenValue, tokenSecret);
             LoggedUser = GetLoggedUser();
 
         }
-
-        // ----------------------------------------------------------- Twitter API v1.1 calls -----------------------------------------------------------  //
-
 
         /*
           
@@ -40,14 +38,15 @@ namespace TwitterOps
          */
 
 
-
         // ---------------------------------------------------------------- ALL GET'S ---------------------------------------------------------------- //
 
 
+        // ----------------------------------------------------------- Twitter API v1.1 calls -----------------------------------------------------------  //
+
         /// <summary>
         /// Get tweet data based of tweet_id (status_id)
         /// </summary>
-        public TweetData GetTweetData(string tweet_id)
+        public TweetData GetTweetById(string tweet_id)
         {
             var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
             var tweet_data = JObject.Parse(response.Result);
@@ -60,7 +59,7 @@ namespace TwitterOps
         /// <summary>
         /// Get tweet data based of tweet_id (status_id)
         /// </summary>
-        public static TweetData GetTweetDataStatic(string tweet_id)
+        public static TweetData GetTweetByIdStatic(string tweet_id)
         {
             var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
             var tweet_data = JObject.Parse(response.Result);
@@ -73,7 +72,7 @@ namespace TwitterOps
         /// <summary>
         /// Get tweet data based of tweet_id (status_id)
         /// </summary>
-        public async Task<TweetData> GetTweetDataAsync(string tweet_id)
+        public async Task<TweetData> GetTweetByIdAsync(string tweet_id)
         {
             var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/show.json?id=" + tweet_id, APIHandler.Method.GET);
             var tweet_data = JObject.Parse(response);
@@ -84,7 +83,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get tweets from tl and return a list of TweetData
+        /// Get tweets from tl of logged user
         /// </summary>
         public List<TweetData> GetTweetsOfTimeline()
         {
@@ -96,7 +95,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get tweets from tl and return a list of TweetData
+        /// Get tweets from tl of logged user
         /// </summary>
         public static List<TweetData> GetTweetsOfTimelineStatic()
         {
@@ -108,7 +107,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get tweets from tl and return a list of TweetData
+        /// Get tweets from tl of logged user
         /// </summary>
         public async Task<List<TweetData>> GetTweetsOfTimelineAsync()
         {
@@ -120,7 +119,79 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get last tweets in which user was mentioned and returns a TweetReply instance
+        /// Get tweets from tl of UserData
+        /// </summary>
+        public List<TweetData> GetTweetsOfTimeline(UserData user)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false&count=200&user_id=" + user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get tweets from tl of UserData
+        /// </summary>
+        public static List<TweetData> GetTweetsOfTimelineStatic(UserData user)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false&count=200&user_id=" + user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get tweets from tl of UserData
+        /// </summary>
+        public async Task<List<TweetData>> GetTweetsOfTimelineAsync(UserData user)
+        {
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false&count=200&user_id=" + user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get tweets from tl of UserData
+        /// </summary>
+        public List<TweetData> GetTweetsOfTimelineSinceTweet(TweetData tweet)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false&count=200&since_id=" + tweet.tweet_id + "&user_id=" + tweet.user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get tweets from tl of UserData
+        /// </summary>
+        public static List<TweetData> GetTweetsOfTimelineSinceTweetStatic(TweetData tweet)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false&count=200&since_id=" + tweet.tweet_id + "&user_id=" + tweet.user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get tweets from tl of UserData
+        /// </summary>
+        public async Task<List<TweetData>> GetTweetsOfTimelineSinceTweetAsync(TweetData tweet)
+        {
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/user_timeline.json?include_rts=false&count=200&since_id=" + tweet.tweet_id + "&user_id=" + tweet.user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned and returns a TweetData instance
         /// </summary>
         public List<TweetData> GetMentionedTweets()
         {
@@ -132,7 +203,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get last tweets in which user was mentioned and returns a TweetReply instance
+        /// Get last tweets in which user was mentioned and returns a TweetData instance
         /// </summary>
         public static List<TweetData> GetMentionedTweetsStatic()
         {
@@ -144,7 +215,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get last tweets in which user was mentioned and returns a TweetReply instance
+        /// Get last tweets in which user was mentioned and returns a TweetData instance
         /// </summary>
         public async Task<List<TweetData>> GetMentionedTweetsAsync()
         {
@@ -156,7 +227,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get last tweets in which user was mentioned with a count parameter and returns a TweetReply instance
+        /// Get last tweets in which user was mentioned with a count parameter and returns a TweetData instance
         /// </summary>
         public List<TweetData> GetMentionedTweets(int count)
         {
@@ -168,7 +239,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get last tweets in which user was mentioned with a count parameter and returns a TweetReply instance
+        /// Get last tweets in which user was mentioned with a count parameter and returns a TweetData instance
         /// </summary>
         public static List<TweetData> GetMentionedTweetsStatic(int count)
         {
@@ -180,7 +251,7 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get last tweets in which user was mentioned with a count parameter and returns a TweetReply instance
+        /// Get last tweets in which user was mentioned with a count parameter and returns a TweetData instance
         /// </summary>
         public async Task<List<TweetData>> GetMentionedTweetsAsync(int count)
         {
@@ -189,6 +260,173 @@ namespace TwitterOps
             var tweet_data = JArray.Parse(response).Children<JObject>().Select(x => new TweetData(x)).ToList();
 
             return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned and returns a TweetData instance
+        /// </summary>
+        public List<TweetData> GetMentionedTweetsByUser(UserData user)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?user_id=" + user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned and returns a TweetData instance
+        /// </summary>
+        public static List<TweetData> GetMentionedTweetsByUserStatic(UserData user)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?user_id=" + user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response.Result).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned and returns a TweetData instance
+        /// </summary>
+        public async Task<List<TweetData>> GetMentionedTweetsByUserAsync(UserData user)
+        {
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/mentions_timeline.json?user_id=" + user.user_id, APIHandler.Method.GET);
+
+            var tweet_data = JArray.Parse(response).Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned since Tweet
+        /// </summary>
+        public List<TweetData> GetMentionedTweetsSinceTweet(TweetData tweet)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + tweet.user.username + "&count=100&since_id=" + tweet.tweet_id, APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned since Tweet
+        /// </summary>
+        public static List<TweetData> GetMentionedTweetsSinceTweetStatic(TweetData tweet)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + tweet.user.username + "&count=100&since_id=" + tweet.tweet_id, APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned since Tweet
+        /// </summary>
+        public async Task<List<TweetData>> GetMentionedTweetsSinceTweetAsync(TweetData tweet)
+        {
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + tweet.user.username + "&count=100&since_id=" + tweet.tweet_id, APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned since Tweet
+        /// </summary>
+        public List<TweetData> GetMentionedTweetsSinceTweetByUser(TweetData tweet, UserData user)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + user.username + "&count=100&result_type=recent&max_id=" + tweet.tweet_id, APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned since Tweet
+        /// </summary>
+        public static List<TweetData> GetMentionedTweetsSinceTweetByUserStatic(TweetData tweet, UserData user)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + user.username + "&count=100&result_type=recent&max_id=" + tweet.tweet_id, APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get last tweets in which user was mentioned since Tweet
+        /// </summary>
+        public async Task<List<TweetData>> GetMentionedTweetsSinceTweetByUserAsync(TweetData tweet, UserData user)
+        {
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + user.username + "&count=100&result_type=recent&max_id=" + tweet.tweet_id, APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+
+        // ----------------------------------------------------------- Twitter API v2 calls -----------------------------------------------------------  //
+
+        /// <summary>
+        /// Get Replies Count From Twitter API v2
+        /// </summary>
+        public JToken GetTweetPublicMetrics(TweetData tweet)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/2/tweets/" + tweet.tweet_id + "?tweet.fields=public_metrics", APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["data"]["public_metrics"];
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get Replies Count From Twitter API v2
+        /// </summary>
+        public static JToken GetTweetPublicMetricsStatic(TweetData tweet)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/2/tweets/" + tweet.tweet_id + "?tweet.fields=public_metrics", APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["data"]["public_metrics"];
+
+            return tweet_data;
+        }
+
+
+
+        // ----------------------------------------------------------- Custom Operations -----------------------------------------------------------  //
+
+        /// <summary>
+        /// Get linear thread of tweet
+        /// </summary>
+        public List<TweetData> GetThreadFromTweet(TweetData tweet)
+        {
+            var tweet_replies = tweet.replies;
+
+            var tweets_replying_to = new List<TweetData>();
+
+            var tweet_replying_to = tweet.replying_to;
+
+            while (true)
+            {
+                if (tweet_replying_to == null)
+                    break;
+
+                tweets_replying_to.Add(tweet_replying_to);
+
+                tweet_replying_to = tweet_replying_to.replying_to;
+            }
+
+            var thread = tweets_replying_to.Union(tweet_replies).ToList();
+            thread.Add(tweet);
+            thread = thread.OrderBy(w => w.created_at).ToList();
+
+            return thread;
         }
 
         /// <summary>
@@ -402,35 +640,95 @@ namespace TwitterOps
         }
 
         /// <summary>
-        /// Get replies to tweet
+        /// Get replies to tweet. Still with some problems
         /// </summary>
         public List<TweetData> GetRepliesOfTweet(TweetData tweet)
         {
-            var tl_tweets = GetTweetsOfTimeline();
+            var tl_tweets = GetTweetsOfTimelineSinceTweet(tweet).OrderByDescending(w => w.created_at).ToList();
 
-            var mention_tweets = GetMentionedTweets();
+            var mention_tweets = GetMentionedTweetsSinceTweet(tweet);
 
-            var union_list = tl_tweets.Union(mention_tweets).ToList();
+            var captured_tweets = tl_tweets.Union(mention_tweets).ToList();
 
-            var get_replies = union_list.Where(x => x.replying_to != null && x.replying_to.tweet_id == tweet.tweet_id).ToList();
+            var replies = new List<TweetData>();
 
-            return get_replies;
+            int replies_count = tweet.replies_count;
+            int last_iteration_count = 0;
+
+            while (replies.Count < replies_count)
+            {
+                foreach (var captured_tweet in captured_tweets)
+                {
+                    var data = captured_tweet.replying_to;
+
+                    if (data != null)
+                        if (captured_tweet.replying_to.tweet_id == tweet.tweet_id)
+                            replies.Add(captured_tweet);
+                }
+
+                if ((replies.Count < replies_count) && replies.Count != last_iteration_count)
+                {
+                    if (replies_count == 1)
+                        captured_tweets = GetMentionedTweetsSinceTweetByUser(replies.OrderByDescending(w => w.created_at).Last(), tweet.user);
+                    else
+                        captured_tweets = GetMentionedTweetsSinceTweetByUser(replies.Where(x => x.user.user_id != tweet.user.user_id).OrderByDescending(w => w.created_at).Last(), tweet.user);
+
+                    captured_tweets = captured_tweets.Where(p => !replies.Any(z => z.tweet_id == p.tweet_id)).ToList();
+                    last_iteration_count = replies.Count;
+                }
+                else
+                    break;
+            }
+
+            replies = replies.GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
+
+            return replies;
         }
 
         /// <summary>
-        /// Get replies to tweet
+        /// Get replies to tweet. Still with some problems
         /// </summary>
         public static List<TweetData> GetRepliesOfTweetStatic(TweetData tweet)
         {
-            var tl_tweets = GetTweetsOfTimelineStatic();
+            var tl_tweets = GetTweetsOfTimelineSinceTweetStatic(tweet).OrderByDescending(w => w.created_at).ToList();
 
-            var mention_tweets = GetMentionedTweetsStatic();
+            var mention_tweets = GetMentionedTweetsSinceTweetStatic(tweet);
 
-            var union_list = tl_tweets.Union(mention_tweets).GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
+            var captured_tweets = tl_tweets.Union(mention_tweets).ToList();
 
-            var get_replies = union_list.Where(x => x.replying_to != null && x.replying_to.tweet_id == tweet.tweet_id).ToList();
+            var replies = new List<TweetData>();
 
-            return get_replies;
+            int replies_count = tweet.replies_count;
+            int last_iteration_count = 0;
+
+            while (replies.Count < replies_count)
+            {
+                foreach (var captured_tweet in captured_tweets)
+                {
+                    var data = captured_tweet.replying_to;
+
+                    if (data != null)
+                        if (captured_tweet.replying_to.tweet_id == tweet.tweet_id)
+                            replies.Add(captured_tweet);
+                }
+
+                if ((replies.Count < replies_count) && replies.Count != last_iteration_count)
+                {
+                    if (replies_count == 1)
+                        captured_tweets = GetMentionedTweetsSinceTweetByUserStatic(replies.OrderByDescending(w => w.created_at).Last(), tweet.user);
+                    else
+                        captured_tweets = GetMentionedTweetsSinceTweetByUserStatic(replies.Where(x => x.user.user_id != tweet.user.user_id).OrderByDescending(w => w.created_at).Last(), tweet.user);
+
+                    captured_tweets = captured_tweets.Where(p => !replies.Any(z => z.tweet_id == p.tweet_id)).ToList();
+                    last_iteration_count = replies.Count;
+                }
+                else
+                    break;
+            }
+
+            replies = replies.GroupBy(x => x.tweet_id).Select(w => w.First()).ToList();
+
+            return replies;
         }
 
         /// <summary>

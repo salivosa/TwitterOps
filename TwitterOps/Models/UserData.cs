@@ -62,7 +62,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Tasks.GetUserFollowingsStatic(this);
+                return Operations.GetUserFollowingsStatic(this);
             }
         }
 
@@ -78,7 +78,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Tasks.GetUserFollowersStatic(this);
+                return Operations.GetUserFollowersStatic(this);
             }
         }
 
@@ -102,7 +102,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Tasks.IsUserShadowbannedStatic(this);
+                return Operations.IsUserShadowbannedStatic(this);
             }
         }
 
@@ -110,7 +110,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return DateTime.ParseExact(user_data["created_at"].ToString(), "ddd MMM dd HH:mm:ss +ffff yyyy", new CultureInfo("en-US"));
+                return DateTime.ParseExact(user_data["created_at"].ToString(), "ddd MMM dd HH:mm:ss +ffff yyyy", new CultureInfo("en-US")).ToLocalTime();
             }
         }
     }

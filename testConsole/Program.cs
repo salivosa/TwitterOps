@@ -18,11 +18,16 @@ namespace testConsole
             string tokenSecret = ConfigurationManager.AppSettings["tokenSecret"];
 
             //Load module
-            var task = new Tasks(consumerKey, consumerSecret, tokenValue, tokenSecret);
+            var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
 
             //Execute a task
 
-            var user = task.GetUserByScreenName("salikatsu");
+            var tweet = ops.GetTweetById("1299733205143023616");
+
+            //var thread = ops.GetThreadFromTweet(tweet);
+            var replies = tweet.replies;
+
+            //var user = ops.GetUserByScreenName("salikatsu");
 
             //var get_shadowbanned_list = user.followers.Where(w=> w.is_protected).ToList();
 

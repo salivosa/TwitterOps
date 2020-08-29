@@ -14,7 +14,7 @@ namespace serviceTest
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private Tasks task { get; set; }
+        private Operations ops { get; set; }
 
         public Worker(ILogger<Worker> logger)
         {
@@ -29,7 +29,7 @@ namespace serviceTest
             string tokenSecret = ConfigurationManager.AppSettings["tokenSecret"];
 
             //Load module
-            task = new Tasks(consumerKey, consumerSecret, tokenValue, tokenSecret);
+            ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
 
             _logger.LogInformation(DateTimeOffset.Now + " - Worker Inicializado!");
         }
@@ -40,11 +40,11 @@ namespace serviceTest
             {
                 try
                 {
-                    var response = task.IsLastMentionRepliedByLoggedUser();
+                    var response = ops.IsLastMentionRepliedByLoggedUser();
 
                     if (!response.Item1)
                     {
-                        var tweet = await task.PostReplyTweetAsync(response.Item2.tweet_message, response.Item2);
+                        var tweet = await ops.PostReplyTweetAsync(response.Item2.tweet_message, response.Item2);
                         _logger.LogInformation(DateTimeOffset.Now + " - Respuesta hecha a usuario @" + tweet.user.username + ": " + tweet.tweet_message);
                     }
                 }
