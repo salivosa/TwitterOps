@@ -1,5 +1,9 @@
-# robosali
-powered by .net core 3.0
+# TwitterOps
+a congruent and useful Twitter API's library
+
+powered by .Net Core 3.0.
 
 # description
-so this project is an attempt to make a twitter bot with ai and capable of doing cool stuff
+right now capable of getting Tweets, Replies, post Tweets... can be used for whatever automation needed
+
+documentation will arrive eventually
