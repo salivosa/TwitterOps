@@ -1,5 +1,4 @@
-﻿using HtmlAgilityPack;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +8,11 @@ using TwitterOps.Models;
 
 namespace TwitterOps.Operation.Users
 {
-    public class Users
+    public class UsersOperations
     {
         private APIHandler APIHandler { get; set; }
 
-        public Users(APIHandler APIHandler)
+        public UsersOperations(APIHandler APIHandler)
         {
             this.APIHandler = APIHandler;
         }
@@ -122,56 +121,20 @@ namespace TwitterOps.Operation.Users
         }
 
         /// <summary>
-        /// Check if User is shadowbanned by UserData instance
+        /// Get mentions of users from tweet in JObject instance
         /// </summary>
-        public bool IsUserShadowbanned(UserData user)
+        public List<UserData> GetUserMentionsFromTweetJObject(JObject json)
         {
-            string url = "https://twitter.com/search?q=" + user.username + "&src=typed_query";
-            var Webget = new HtmlWeb();
-            var doc = Webget.Load(url);
-
-            bool check = false;
-
-            if (doc.DocumentNode.SelectSingleNode("//div[@class='noresults']") != null)
-                check = true;
-
-            return check;
+            return json["entities"]["user_mentions"].Children<JObject>().Select(x => GetUserById(x["id"].ToString())).ToList();
         }
 
         /// <summary>
-        /// Check if User is shadowbanned by UserData instance
+        /// Get mentions of users from tweet in JObject instance
         /// </summary>
-        public static bool IsUserShadowbannedStatic(UserData user)
+        public static List<UserData> GetUserMentionsFromTweetJObjectStatic(JObject json)
         {
-            string url = "https://twitter.com/search?q=" + user.username + "&src=typed_query";
-            var Webget = new HtmlWeb();
-            var doc = Webget.Load(url);
-
-            bool check = false;
-
-            if (doc.DocumentNode.SelectSingleNode("//div[@class='noresults']") != null)
-                check = true;
-
-            return check;
+            return json["entities"]["user_mentions"].Children<JObject>().Select(x => GetUserByIdStatic(x["id"].ToString())).ToList();
         }
-
-        /// <summary>
-        /// Check if User is shadowbanned by username
-        /// </summary>
-        public bool IsUserShadowbanned(string username)
-        {
-            string url = "https://twitter.com/search?q=" + username + "&src=typed_query";
-            var Webget = new HtmlWeb();
-            var doc = Webget.Load(url);
-
-            bool check = false;
-
-            if (doc.DocumentNode.SelectSingleNode("//div[@class='noresults']") != null)
-                check = true;
-
-            return check;
-        }
-
 
         /// <summary>
         /// Get List of Followers of User

@@ -1,5 +1,4 @@
-﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -31,22 +30,22 @@ namespace TwitterOps
         /// <summary>
         /// Operations related to Tweets
         /// </summary>
-        public Tweets Tweets
+        public TweetsOperations Tweets
         {
             get
             {
-                return new Tweets(APIHandler, LoggedUser);
+                return new TweetsOperations(APIHandler, LoggedUser);
             }
         }
 
         /// <summary>
         /// Operations related to Users
         /// </summary>
-        public Users Users
+        public UsersOperations Users
         {
             get
             {
-                return new Users(APIHandler);
+                return new UsersOperations(APIHandler);
             }
         }
 

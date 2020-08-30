@@ -5,15 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitterOps.Models;
+using TwitterOps.Operation.Users;
 
 namespace TwitterOps.Operation.Tweets
 {
-    public class Tweets
+    public class TweetsOperations
     {
         private APIHandler APIHandler { get; set; }
 
         private UserData LoggedUser { get; set; }
-        public Tweets(APIHandler APIHandler, UserData LoggedUser)
+        public TweetsOperations(APIHandler APIHandler, UserData LoggedUser)
         {
             this.APIHandler = APIHandler;
             this.LoggedUser = LoggedUser;
@@ -351,6 +352,30 @@ namespace TwitterOps.Operation.Tweets
             return tweet_data;
         }
 
+        /// <summary>
+        /// Get Tweets Mentioning User
+        /// </summary>
+        public List<TweetData> GetMentionedTweets(UserData user)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + user.username + "&count=100", APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Get Tweets Mentioning User
+        /// </summary>
+        public static List<TweetData> GetMentionedTweetsStatic(UserData user)
+        {
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/search/tweets.json?q=" + user.username + "&count=100", APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response.Result)["statuses"].Children<JObject>().Select(x => new TweetData(x)).ToList();
+
+            return tweet_data;
+        }
+
 
         // ----------------------------------------------------------- Twitter API v2 calls -----------------------------------------------------------  //
 
@@ -378,6 +403,17 @@ namespace TwitterOps.Operation.Tweets
             return tweet_data;
         }
 
+        /// <summary>
+        /// Get Replies Count From Twitter API v2
+        /// </summary>
+        public async Task<JToken> GetTweetPublicMetricsAsync(TweetData tweet)
+        {
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/2/tweets/" + tweet.tweet_id + "?tweet.fields=public_metrics", APIHandler.Method.GET);
+
+            var tweet_data = JObject.Parse(response)["data"]["public_metrics"];
+
+            return tweet_data;
+        }
 
 
         // ----------------------------------------------------------- Custom Operations -----------------------------------------------------------  //
@@ -636,7 +672,7 @@ namespace TwitterOps.Operation.Tweets
             int replies_count = tweet.replies_count;
             int last_iteration_count = 0;
 
-            while (replies.Count < replies_count)
+            while (true)
             {
                 foreach (var captured_tweet in captured_tweets)
                 {
@@ -647,7 +683,7 @@ namespace TwitterOps.Operation.Tweets
                             replies.Add(captured_tweet);
                 }
 
-                if ((replies.Count < replies_count) && replies.Count != last_iteration_count)
+                if ((replies.Count < replies_count) && (replies.Count != last_iteration_count))
                 {
                     if (replies_count == 1)
                         captured_tweets = GetMentionedTweetsSinceTweetByUser(replies.OrderByDescending(w => w.created_at).Last(), tweet.user);

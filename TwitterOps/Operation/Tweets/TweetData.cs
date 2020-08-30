@@ -72,7 +72,7 @@ namespace TwitterOps.Models
                 var id = tweet_data["in_reply_to_status_id"].ToString();
 
                 if (id != "")
-                    return Tweets.GetTweetByIdStatic(tweet_data["in_reply_to_status_id"].ToString());
+                    return TweetsOperations.GetTweetByIdStatic(tweet_data["in_reply_to_status_id"].ToString());
                 else
                     return null;
             }
@@ -82,7 +82,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Tweets.GetRepliesOfTweetStatic(this);
+                return TweetsOperations.GetRepliesOfTweetStatic(this);
             }
         }
 
@@ -90,7 +90,20 @@ namespace TwitterOps.Models
         {
             get
             {
-                return int.Parse(Tweets.GetTweetPublicMetricsStatic(this)["reply_count"].ToString());
+                return int.Parse(TweetsOperations.GetTweetPublicMetricsStatic(this)["reply_count"].ToString());
+            }
+        }
+
+        public List<UserData> user_mentions
+        {
+            get
+            {
+                var user_mentions = tweet_data["entities"]["user_mentions"];
+
+                if (user_mentions != null)
+                    return UsersOperations.GetUserMentionsFromTweetJObjectStatic(tweet_data);
+                else
+                    return null;
             }
         }
 
@@ -114,7 +127,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return int.Parse(Tweets.GetTweetPublicMetricsStatic(this)["quote_count"].ToString());
+                return int.Parse(TweetsOperations.GetTweetPublicMetricsStatic(this)["quote_count"].ToString());
             }
         }
     }

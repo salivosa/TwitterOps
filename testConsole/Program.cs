@@ -22,10 +22,9 @@ namespace testConsole
 
             //Execute a task
 
-            var tweet = ops.Tweets.GetTweetById("1299733205143023616");
+            var tweet = ops.Users.GetUserByScreenName("robosaIi");
 
             //var thread = ops.GetThreadFromTweet(tweet);
-            var replies = tweet.replies;
 
             //var user = ops.GetUserByScreenName("salikatsu");
 
