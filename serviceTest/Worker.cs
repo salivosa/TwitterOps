@@ -40,11 +40,11 @@ namespace serviceTest
             {
                 try
                 {
-                    var response = ops.IsLastMentionRepliedByLoggedUser();
+                    var response = ops.Tweets.IsLastMentionRepliedByLoggedUser();
 
                     if (!response.Item1)
                     {
-                        var tweet = await ops.PostReplyTweetAsync(response.Item2.tweet_message, response.Item2);
+                        var tweet = await ops.Tweets.PostReplyTweetAsync(response.Item2.tweet_message, response.Item2);
                         _logger.LogInformation(DateTimeOffset.Now + " - Respuesta hecha a usuario @" + tweet.user.username + ": " + tweet.tweet_message);
                     }
                 }

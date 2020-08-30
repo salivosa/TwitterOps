@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using TwitterOps.Operation.Users;
 
 namespace TwitterOps.Models
 {
@@ -62,7 +63,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Operations.GetUserFollowingsStatic(this);
+                return Users.GetUserFollowingsStatic(this);
             }
         }
 
@@ -78,7 +79,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Operations.GetUserFollowersStatic(this);
+                return Users.GetUserFollowersStatic(this);
             }
         }
 
@@ -102,7 +103,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Operations.IsUserShadowbannedStatic(this);
+                return Users.IsUserShadowbannedStatic(this);
             }
         }
 

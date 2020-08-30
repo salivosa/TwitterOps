@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using TwitterOps.Operation.Tweets;
+using TwitterOps.Operation.Users;
 
 namespace TwitterOps.Models
 {
@@ -70,7 +72,7 @@ namespace TwitterOps.Models
                 var id = tweet_data["in_reply_to_status_id"].ToString();
 
                 if (id != "")
-                    return Operations.GetTweetByIdStatic(tweet_data["in_reply_to_status_id"].ToString());
+                    return Tweets.GetTweetByIdStatic(tweet_data["in_reply_to_status_id"].ToString());
                 else
                     return null;
             }
@@ -80,7 +82,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return Operations.GetRepliesOfTweetStatic(this);
+                return Tweets.GetRepliesOfTweetStatic(this);
             }
         }
 
@@ -88,7 +90,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return int.Parse(Operations.GetTweetPublicMetricsStatic(this)["reply_count"].ToString());
+                return int.Parse(Tweets.GetTweetPublicMetricsStatic(this)["reply_count"].ToString());
             }
         }
 
@@ -112,7 +114,7 @@ namespace TwitterOps.Models
         {
             get
             {
-                return int.Parse(Operations.GetTweetPublicMetricsStatic(this)["quote_count"].ToString());
+                return int.Parse(Tweets.GetTweetPublicMetricsStatic(this)["quote_count"].ToString());
             }
         }
     }
