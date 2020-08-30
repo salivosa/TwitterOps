@@ -4,9 +4,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Description>A congruent and useful Twitter API library.
 
-Powered by .Net Core 3.0.</Description>
+Powered by .Net Core 3.0</Description>
+
+    <RepositoryUrl>https://github.com/salivosa/TwitterOps</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    
     <Authors>salivosa</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
