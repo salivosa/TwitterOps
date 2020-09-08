@@ -60,6 +60,14 @@ namespace TwitterOps.Models
             }
         }
 
+        public string profile_image_url
+        {
+            get
+            {
+                return user_data["profile_image_url"].ToString().Replace("normal", "200x200");
+            }
+        }
+
         public List<UserData> follows
         {
             get
