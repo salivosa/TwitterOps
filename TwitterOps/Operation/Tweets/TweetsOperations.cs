@@ -525,7 +525,7 @@ namespace TwitterOps.Operation.Tweets
         /// <summary>
         /// Check if last mention to user was replied by logged user in API credentials
         /// </summary>
-        public async Task<Tuple<bool, TweetData>> IsLastMentionRepliedByLoggedUserAsync(string user_id)
+        public async Task<Tuple<bool, TweetData>> IsLastMentionRepliedByLoggedUserAsync()
         {
             var last_mention = await GetMentionedTweetsAsync(1);
 
