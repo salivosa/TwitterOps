@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitterOps.Models;
 using TwitterOps.Operation.Users;
 
 namespace TwitterOps.Operation.Tweets
@@ -490,7 +489,7 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public Tuple<bool, TweetData> IsLastMentionRepliedByLoggedUser()
         {
-            var last_mention = GetMentionedTweets(1)[0];
+            var last_mention = GetMentionedTweets().OrderBy(z => z.created_at).Last();
 
             var data = last_mention.replies;
 
@@ -816,12 +815,18 @@ namespace TwitterOps.Operation.Tweets
 
         // ---------------------------------------------------------------- ALL POST'S ---------------------------------------------------------------- //
 
+        // ----------------------------------------------------------- Twitter API v1.1 calls -----------------------------------------------------------  //
+
+        //Limit of characters on a tweet atm
+        static readonly int tweet_limit = 280;
 
         /// <summary>
         /// Post a tweet passing string with text
         /// </summary>
         public TweetData PostTweet(string text)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
 
@@ -837,6 +842,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public static TweetData PostTweetStatic(string text)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
 
@@ -852,6 +859,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public async Task<TweetData> PostTweetAsync(string text)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
 
@@ -867,6 +876,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public TweetData PostReplyTweet(string text, TweetData tweet)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet.tweet_id);
@@ -884,6 +895,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public static TweetData PostReplyTweetStatic(string text, TweetData tweet)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet.tweet_id);
@@ -901,6 +914,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public async Task<TweetData> PostReplyTweetAsync(string text, TweetData tweet)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet.tweet_id);
@@ -918,6 +933,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public static TweetData PostReplyTweet(string text, string tweet_id)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet_id);
@@ -935,6 +952,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public static TweetData PostReplyTweetStatic(string text, string tweet_id)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet_id);
@@ -952,6 +971,8 @@ namespace TwitterOps.Operation.Tweets
         /// </summary>
         public async Task<TweetData> PostReplyTweetAsync(string text, string tweet_id)
         {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
             var parameters = new Dictionary<string, object> { };
             parameters.Add("status", text);
             parameters.Add("in_reply_to_status_id", tweet_id);
@@ -962,6 +983,408 @@ namespace TwitterOps.Operation.Tweets
             var tweet_data = new TweetData(JObject.Parse(response));
 
             return tweet_data;
+        }
+
+
+
+        // ----------------------------------------------------------- Custom Operations -----------------------------------------------------------  //
+
+        /// <summary>
+        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// </summary>
+        public TweetData PostTweetQuote(string text, string tweet_id)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            text = text + " " + GetTweetById(tweet_id).url;
+
+            return PostTweet(text);
+        }
+
+        /// <summary>
+        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// </summary>
+        public static TweetData PostTweetQuoteStatic(string text, string tweet_id)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            text = text + " " + GetTweetByIdStatic(tweet_id).url;
+
+            return PostTweetStatic(text);
+        }
+
+        /// <summary>
+        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// </summary>
+        public async Task<TweetData> PostTweetQuoteAsync(string text, string tweet_id)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var tweet_data = await GetTweetByIdAsync(tweet_id);
+
+            text = text + " " + tweet_data.url;
+
+            return await PostTweetAsync(text);
+        }
+
+        /// <summary>
+        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// </summary>
+        public TweetData PostTweetQuote(string text, TweetData tweet)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            text = text + " " + tweet.url;
+
+            return PostTweet(text);
+        }
+
+        /// <summary>
+        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// </summary>
+        public static TweetData PostTweetQuoteStatic(string text, TweetData tweet)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            text = text + " " + tweet.url;
+
+            return PostTweetStatic(text);
+        }
+
+        /// <summary>
+        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// </summary>
+        public async Task<TweetData> PostTweetQuoteAsync(string text, TweetData tweet)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            text = text + " " + tweet.url;
+
+            return await PostTweetAsync(text);
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with text paragraph
+        /// </summary>
+        public List<TweetData> PostThread(string text)
+        {
+            var thread = new List<TweetData>();
+
+            var paragraphs = text.Split('.').Select(w => w.Trim() + ".").ToList();
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = PostTweet(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = PostReplyTweet(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with text paragraph
+        /// </summary>
+        public static List<TweetData> PostThreadStatic(string text)
+        {
+            var thread = new List<TweetData>();
+
+            var paragraphs = text.Split('.').Select(w => w.Trim() + ".").ToList();
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = PostTweetStatic(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = PostReplyTweetStatic(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with text paragraph
+        /// </summary>
+        public async Task<List<TweetData>> PostThreadAsync(string text)
+        {
+            var thread = new List<TweetData>();
+
+            var paragraphs = text.Split('.').Select(w => w.Trim() + ".").ToList();
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = await PostTweetAsync(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = await PostReplyTweetAsync(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with text paragraph (if split_by_dot set to false it won't split by '.')
+        /// </summary>
+        public List<TweetData> PostThread(string text, bool split_by_dot)
+        {
+            var thread = new List<TweetData>();
+
+            var paragraphs = new List<string>();
+
+            if (split_by_dot)
+                paragraphs = text.Split('.').Select(w => w.Trim() + ".").ToList();
+            else
+                paragraphs.Add(text);
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = PostTweet(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = PostReplyTweet(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with text paragraph (if split_by_dot set to false it won't split by '.')
+        /// </summary>
+        public static List<TweetData> PostThreadStatic(string text, bool split_by_dot)
+        {
+            var thread = new List<TweetData>();
+
+            var paragraphs = new List<string>();
+
+            if (split_by_dot)
+                paragraphs = text.Split('.').Select(w => w.Trim() + ".").ToList();
+            else
+                paragraphs.Add(text);
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = PostTweetStatic(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = PostReplyTweetStatic(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with text paragraph (if split_by_dot set to false it won't split by '.')
+        /// </summary>
+        public async Task<List<TweetData>> PostThreadAsync(string text, bool split_by_dot)
+        {
+            var thread = new List<TweetData>();
+
+            var paragraphs = new List<string>();
+
+            if (split_by_dot)
+                paragraphs = text.Split('.').Select(w => w.Trim() + ".").ToList();
+            else
+                paragraphs.Add(text);
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = await PostTweetAsync(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = await PostReplyTweetAsync(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with list of paragraphs
+        /// </summary>
+        public List<TweetData> PostThread(List<string> paragraphs)
+        {
+            var thread = new List<TweetData>();
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = PostTweet(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = PostReplyTweet(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with list of paragraphs
+        /// </summary>
+        public static List<TweetData> PostThreadStatic(List<string> paragraphs)
+        {
+            var thread = new List<TweetData>();
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = PostTweetStatic(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = PostReplyTweetStatic(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
+        }
+
+        /// <summary>
+        /// Post a thread of tweets with list of paragraphs
+        /// </summary>
+        public async Task<List<TweetData>> PostThreadAsync(List<string> paragraphs)
+        {
+            var thread = new List<TweetData>();
+
+            TweetData last_tweet = null;
+
+            foreach (var paragraph in paragraphs)
+            {
+                int k = 0;
+                var tweet_content = paragraph.ToLookup(c => (k++ / tweet_limit)).Select(e => new string(e.ToArray())).ToList();
+
+                foreach (var tweet_text in tweet_content)
+                {
+                    if (last_tweet == null)
+                    {
+                        last_tweet = await PostTweetAsync(tweet_text);
+                        thread.Add(last_tweet);
+                    }
+                    else
+                    {
+                        last_tweet = await PostReplyTweetAsync(tweet_text, last_tweet);
+                        thread.Add(last_tweet);
+                    }
+
+                }
+            }
+
+            return thread;
         }
     }
 }

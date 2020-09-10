@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TwitterOps.Operation.Tweets;
 using TwitterOps.Operation.Users;
 
-namespace TwitterOps.Models
+namespace TwitterOps.Operation.Users
 {
     public class UserData
     {
@@ -108,12 +108,11 @@ namespace TwitterOps.Models
             }
         }
 
-        public bool is_shadowbanned
+        public bool? is_shadowbanned
         {
             get
             {
-                var data = TweetsOperations.GetMentionedTweetsStatic(this);
-                return data.Count == 0;
+                return UsersOperations.IsUserShadowbannedStatic(this);
             }
         }
 

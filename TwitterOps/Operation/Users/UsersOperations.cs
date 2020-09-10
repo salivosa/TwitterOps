@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using TwitterOps.Models;
+using TwitterOps.Operation.Tweets;
 
 namespace TwitterOps.Operation.Users
 {
@@ -137,6 +139,50 @@ namespace TwitterOps.Operation.Users
         }
 
         /// <summary>
+        /// Check if user is shadowbanned
+        /// </summary>
+        public bool? IsUserShadowbanned(UserData user)
+        {
+            //If user is protected then check if logged user can see user tweets so i validate that here and if its not then it will return null
+            if (user.is_protected && user.followers.Count() == 0)
+                return null;
+
+            string url = "https://twitter.com/search?q=" + user.username + "&src=typed_query";
+            var Webget = new HtmlWeb();
+            var doc = Webget.Load(url);
+
+            bool check = false;
+
+            //Check if 
+            if (doc.DocumentNode.SelectSingleNode("//div[@class='noresults']") != null)
+                check = true;
+
+            return check;
+        }
+
+        /// <summary>
+        /// Check if user is shadowbanned
+        /// </summary>
+        public static bool? IsUserShadowbannedStatic(UserData user)
+        {
+            //If user is protected then check if logged user can see user tweets so i validate that here and if its not then it will return null
+            if (user.is_protected && user.followers.Count() == 0)
+                return null;
+
+            string url = "https://twitter.com/search?q=" + user.username + "&src=typed_query";
+            var Webget = new HtmlWeb();
+            var doc = Webget.Load(url);
+
+            bool check = false;
+
+            //Check if 
+            if (doc.DocumentNode.SelectSingleNode("//div[@class='noresults']") != null)
+                check = true;
+
+            return check;
+        }
+
+        /// <summary>
         /// Get List of Followers of User
         /// </summary>
         public List<UserData> GetUserFollowers(UserData user)
@@ -155,6 +201,9 @@ namespace TwitterOps.Operation.Users
 
                 var result_data = JObject.Parse(response.Result);
 
+                if (result_data["next_cursor"] == null)
+                    break;
+
                 page = result_data["next_cursor"].ToString();
 
                 var result_users = result_data["users"].Children<JObject>().Select(x => new UserData(x)).ToList();
@@ -163,6 +212,7 @@ namespace TwitterOps.Operation.Users
 
                 if (page == "0")
                     break;
+
             }
 
             return list_users;
@@ -184,6 +234,9 @@ namespace TwitterOps.Operation.Users
                 var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/followers/list.json?count=" + max_entries + "&user_id=" + user.user_id + next_cursor, APIHandler.Method.GET);
 
                 var result_data = JObject.Parse(response.Result);
+
+                if (result_data["next_cursor"] == null)
+                    break;
 
                 page = result_data["next_cursor"].ToString();
 
@@ -214,6 +267,9 @@ namespace TwitterOps.Operation.Users
                 var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/followers/list.json?count=" + max_entries + "&user_id=" + user.user_id + next_cursor, APIHandler.Method.GET);
 
                 var result_data = JObject.Parse(response);
+
+                if (result_data["next_cursor"] == null)
+                    break;
 
                 page = result_data["next_cursor"].ToString();
 
@@ -247,6 +303,9 @@ namespace TwitterOps.Operation.Users
 
                 var result_data = JObject.Parse(response.Result);
 
+                if (result_data["next_cursor"] == null)
+                    break;
+
                 page = result_data["next_cursor"].ToString();
 
                 var result_users = result_data["users"].Children<JObject>().Select(x => new UserData(x)).ToList();
@@ -279,6 +338,9 @@ namespace TwitterOps.Operation.Users
 
                 var result_data = JObject.Parse(response.Result);
 
+                if (result_data["next_cursor"] == null)
+                    break;
+
                 page = result_data["next_cursor"].ToString();
 
                 var result_users = result_data["users"].Children<JObject>().Select(x => new UserData(x)).ToList();
@@ -310,6 +372,9 @@ namespace TwitterOps.Operation.Users
                 var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/friends/list.json?count=" + max_entries + "&user_id=" + user.user_id + next_cursor, APIHandler.Method.GET);
 
                 var result_data = JObject.Parse(response);
+
+                if (result_data["next_cursor"] == null)
+                    break;
 
                 page = result_data["next_cursor"].ToString();
 

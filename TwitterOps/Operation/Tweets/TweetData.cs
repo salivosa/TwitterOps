@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using TwitterOps.Operation.Tweets;
 using TwitterOps.Operation.Users;
 
-namespace TwitterOps.Models
+namespace TwitterOps.Operation.Tweets
 {
     public class TweetData
     {
