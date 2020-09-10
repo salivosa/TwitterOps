@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TwitterOps.Operation.Media;
 using TwitterOps.Operation.Tweets;
 using TwitterOps.Operation.Users;
 
@@ -45,6 +46,17 @@ namespace TwitterOps
             get
             {
                 return new UsersOperations(APIHandler);
+            }
+        }
+
+        /// <summary>
+        /// Operations related to Media
+        /// </summary>
+        public MediaOperations Media
+        {
+            get
+            {
+                return new MediaOperations(APIHandler);
             }
         }
 

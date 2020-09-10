@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitterOps.Operation.Media;
 using TwitterOps.Operation.Users;
 
 namespace TwitterOps.Operation.Tweets
@@ -872,6 +873,63 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
+        /// Post a tweet with image from url
+        /// </summary>
+        public TweetData PostTweetWithImage(string text, string img_url)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var image_data = MediaOperations.UploadImageFromURLStatic(img_url);
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with image from url
+        /// </summary>
+        public static TweetData PostTweetWithImageStatic(string text, string img_url)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var image_data = MediaOperations.UploadImageFromURLStatic(img_url);
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with image from url
+        /// </summary>
+        public async Task<TweetData> PostTweetWithImageAsync(string text, string img_url)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var image_data = MediaOperations.UploadImageFromURLStatic(img_url);
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
         /// Reply a tweet passing string with text and TweetData instance
         /// </summary>
         public TweetData PostReplyTweet(string text, TweetData tweet)
@@ -990,7 +1048,7 @@ namespace TwitterOps.Operation.Tweets
         // ----------------------------------------------------------- Custom Operations -----------------------------------------------------------  //
 
         /// <summary>
-        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// Post a tweet quoting other tweet with text and tweet_id
         /// </summary>
         public TweetData PostTweetQuote(string text, string tweet_id)
         {
@@ -1002,7 +1060,7 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
-        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// Post a tweet quoting other tweet with text and tweet_id
         /// </summary>
         public static TweetData PostTweetQuoteStatic(string text, string tweet_id)
         {
@@ -1014,7 +1072,7 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
-        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// Post a tweet quoting other tweet with text and tweet_id
         /// </summary>
         public async Task<TweetData> PostTweetQuoteAsync(string text, string tweet_id)
         {
@@ -1028,7 +1086,7 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
-        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// Post a tweet quoting other tweet with text and TweetData instance
         /// </summary>
         public TweetData PostTweetQuote(string text, TweetData tweet)
         {
@@ -1040,7 +1098,7 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
-        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// Post a tweet quoting other tweet with text and TweetData instance
         /// </summary>
         public static TweetData PostTweetQuoteStatic(string text, TweetData tweet)
         {
@@ -1052,7 +1110,7 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
-        /// Reply a tweet with a quote passing string with text and tweet_id (status_id)
+        /// Post a tweet quoting other tweet with text and TweetData instance
         /// </summary>
         public async Task<TweetData> PostTweetQuoteAsync(string text, TweetData tweet)
         {
