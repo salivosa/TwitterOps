@@ -818,7 +818,7 @@ namespace TwitterOps.Operation.Tweets
 
         // ----------------------------------------------------------- Twitter API v1.1 calls -----------------------------------------------------------  //
 
-        //Limit of characters on a tweet atm
+        //Limit of characters of a tweet atm
         static readonly int tweet_limit = 280;
 
         /// <summary>
@@ -875,7 +875,184 @@ namespace TwitterOps.Operation.Tweets
         /// <summary>
         /// Post a tweet with image from url
         /// </summary>
-        public TweetData PostTweetWithImage(string text, string img_url)
+        public TweetData PostTweetWithImageURL(string img_url)
+        {
+            var image_data = MediaOperations.UploadImageFromURLStatic(img_url);
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with image from url
+        /// </summary>
+        public static TweetData PostTweetWithImageURLStatic(string img_url)
+        {
+            var image_data = MediaOperations.UploadImageFromURLStatic(img_url);
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with image from url
+        /// </summary>
+        public async Task<TweetData> PostTweetWithImageURLAsync(string img_url)
+        {
+            var image_data = MediaOperations.UploadImageFromURLStatic(img_url);
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with images from list of urls
+        /// </summary>
+        public TweetData PostTweetWithImagesURL(List<string> img_url)
+        {
+            var list_media = new List<MediaData>();
+
+            foreach (var url in img_url)
+                list_media.Add(MediaOperations.UploadImageFromURLStatic(url));
+
+            //Only can post 4 images max in a tweet
+            var list_media_ids = string.Join(",", list_media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with images from list of urls
+        /// </summary>
+        public static TweetData PostTweetWithImagesURLStatic(List<string> img_url)
+        {
+            var list_media = new List<MediaData>();
+
+            foreach (var url in img_url)
+                list_media.Add(MediaOperations.UploadImageFromURLStatic(url));
+
+            //Only can post 4 images max in a tweet
+            var list_media_ids = string.Join(",", list_media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with images from list of urls
+        /// </summary>
+        public async Task<TweetData> PostTweetWithImagesURLAsync(List<string> img_url)
+        {
+            var list_media = new List<MediaData>();
+
+            foreach (var url in img_url)
+                list_media.Add(MediaOperations.UploadImageFromURLStatic(url));
+
+            //Only can post 4 images max in a tweet
+            var list_media_ids = string.Join(",", list_media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and images from list of urls
+        /// </summary>
+        public TweetData PostTweetWithImagesURL(string text, List<string> img_url)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var list_media = new List<MediaData>();
+
+            foreach (var url in img_url)
+                list_media.Add(MediaOperations.UploadImageFromURLStatic(url));
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            //Only can post 4 images max in a tweet
+            var list_media_ids = string.Join(",", list_media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and images from list of urls
+        /// </summary>
+        public static TweetData PostTweetWithImagesURLStatic(string text, List<string> img_url)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var list_media = new List<MediaData>();
+
+            foreach (var url in img_url)
+                list_media.Add(MediaOperations.UploadImageFromURLStatic(url));
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            //Only can post 4 images max in a tweet
+            var list_media_ids = string.Join(",", list_media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and images from list of urls
+        /// </summary>
+        public async Task<TweetData> PostTweetWithImagesURLAsync(string text, List<string> img_url)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var list_media = new List<MediaData>();
+
+            foreach (var url in img_url)
+                list_media.Add(MediaOperations.UploadImageFromURLStatic(url));
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            //Only can post 4 images max in a tweet
+            var list_media_ids = string.Join(",", list_media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and image from url
+        /// </summary>
+        public TweetData PostTweetWithImageURL(string text, string img_url)
         {
             text = string.Join("", text.ToCharArray().Take(tweet_limit));
 
@@ -892,9 +1069,9 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
-        /// Post a tweet with image from url
+        /// Post a tweet with text and image from url
         /// </summary>
-        public static TweetData PostTweetWithImageStatic(string text, string img_url)
+        public static TweetData PostTweetWithImageURLStatic(string text, string img_url)
         {
             text = string.Join("", text.ToCharArray().Take(tweet_limit));
 
@@ -911,9 +1088,9 @@ namespace TwitterOps.Operation.Tweets
         }
 
         /// <summary>
-        /// Post a tweet with image from url
+        /// Post a tweet with text and image from url
         /// </summary>
-        public async Task<TweetData> PostTweetWithImageAsync(string text, string img_url)
+        public async Task<TweetData> PostTweetWithImageURLAsync(string text, string img_url)
         {
             text = string.Join("", text.ToCharArray().Take(tweet_limit));
 
@@ -923,6 +1100,206 @@ namespace TwitterOps.Operation.Tweets
             parameters.Add("status", text);
 
             var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with image from path
+        /// </summary>
+        public TweetData PostTweetWithImagePath(string path)
+        {
+            var image_data = MediaOperations.UploadImageFromPathStatic(path);
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + image_data.media_id, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with MediaData instance
+        /// </summary>
+        public TweetData PostTweetWithMedia(MediaData media)
+        {
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + media.media_id, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with MediaData instance
+        /// </summary>
+        public static TweetData PostTweetWithMediaStatic(MediaData media)
+        {
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + media.media_id, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with MediaData instance
+        /// </summary>
+        public async Task<TweetData> PostTweetWithMediaAsync(MediaData media)
+        {
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + media.media_id, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with a list of MediaData instance
+        /// </summary>
+        public TweetData PostTweetWithMedia(List<MediaData> media)
+        {
+            var list_media_ids = string.Join(",", media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with a list of MediaData instance
+        /// </summary>
+        public static TweetData PostTweetWithMediaStatic(List<MediaData> media)
+        {
+            var list_media_ids = string.Join(",", media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with a list of MediaData instance
+        /// </summary>
+        public async Task<TweetData> PostTweetWithMediaAsync(List<MediaData> media)
+        {
+            var list_media_ids = string.Join(",", media.Select(w => w.media_id).Take(4).ToList());
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and MediaData instance
+        /// </summary>
+        public TweetData PostTweetWithMedia(string text, MediaData media)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + media.media_id, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and MediaData instance
+        /// </summary>
+        public static TweetData PostTweetWithMediaStatic(string text, MediaData media)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + media.media_id, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and MediaData instance
+        /// </summary>
+        public async Task<TweetData> PostTweetWithMediaAsync(string text, MediaData media)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + media.media_id, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and a list of MediaData instance
+        /// </summary>
+        public TweetData PostTweetWithMedia(string text, List<MediaData> media)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var list_media_ids = string.Join(",", media.Select(w => w.media_id).Take(4).ToList());
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and a list of MediaData instance
+        /// </summary>
+        public static TweetData PostTweetWithMediaStatic(string text, List<MediaData> media)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var list_media_ids = string.Join(",", media.Select(w => w.media_id).Take(4).ToList());
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST, parameters);
+
+            var tweet_data = new TweetData(JObject.Parse(response.Result));
+
+            return tweet_data;
+        }
+
+        /// <summary>
+        /// Post a tweet with text and a list of MediaData instance
+        /// </summary>
+        public async Task<TweetData> PostTweetWithMediaAsync(string text, List<MediaData> media)
+        {
+            text = string.Join("", text.ToCharArray().Take(tweet_limit));
+
+            var list_media_ids = string.Join(",", media.Select(w => w.media_id).Take(4).ToList());
+
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("status", text);
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://api.twitter.com/1.1/statuses/update.json?media_ids=" + list_media_ids, APIHandler.Method.POST, parameters);
 
             var tweet_data = new TweetData(JObject.Parse(response));
 
