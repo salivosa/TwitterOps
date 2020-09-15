@@ -25,7 +25,7 @@ namespace testConsole
 
             var lol = new List<string> { "https://pbs.twimg.com/media/DpUq61zUUAEv16G?format=jpg&name=small", "https://pbs.twimg.com/media/D7LPDN1VUAE0cx2?format=jpg&name=small", "https://pbs.twimg.com/media/Drtz9kiU4AA_MbM?format=jpg&name=small", "https://pbs.twimg.com/media/DpuEzHXU8AAy4AQ?format=jpg&name=small" };
 
-            var media = ops.Media.UploadCustomMediaFromPath(@"C:\Users\salivosa\Downloads\ezgif.com-crop.mp4", TwitterOps.Operation.Media.MediaData.MediaCategory.tweet_video);
+            var media = ops.Media.UploadCustomMediaFromPath(@"C:\Users\salivosa\Downloads\testo1.mp4", TwitterOps.Operation.Media.MediaData.MediaCategory.tweet_video);
 
             var tweet = ops.Tweets.PostTweetWithMedia("lol", media);
 

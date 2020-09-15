@@ -158,71 +158,167 @@ namespace TwitterOps.Operation.Media
             return media_data;
         }
 
-        /// <summary>
-        /// Upload Custom media from url and MediaCategory enum
-        /// </summary>
-        public MediaData UploadCustomMediaFromURL(string url, MediaCategory mediaCategory)
+        public MediaData UploadCustomMediaINIT(long file_size_bytes, MediaCategory mediaCategory)
         {
             var parameters = new Dictionary<string, object> { };
-
-            using (var client = new WebClient())
-            {
-                byte[] dataBytes = client.DownloadData(new Uri(url));
-                string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
-                parameters.Add("media_data", encodedFileAsBase64);
-            }
-
+            parameters.Add("total_bytes", file_size_bytes);
             parameters.Add("media_category", mediaCategory);
+            parameters.Add("media_type", GetMediaTypeByMediaCategory(mediaCategory));
 
-            var response = APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
+            var response = APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=INIT", APIHandler.Method.POST, parameters);
 
             var media_data = new MediaData(JObject.Parse(response.Result));
 
             return media_data;
         }
 
-        /// <summary>
-        /// Upload Custom media from url and MediaCategory enum
-        /// </summary>
-        public static MediaData UploadCustomMediaFromURLStatic(string url, MediaCategory mediaCategory)
+        public static MediaData UploadCustomMediaINITStatic(long file_size_bytes, MediaCategory mediaCategory)
         {
             var parameters = new Dictionary<string, object> { };
-
-            using (var client = new WebClient())
-            {
-                byte[] dataBytes = client.DownloadData(new Uri(url));
-                string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
-                parameters.Add("media_data", encodedFileAsBase64);
-            }
-
+            parameters.Add("total_bytes", file_size_bytes);
             parameters.Add("media_category", mediaCategory);
+            parameters.Add("media_type", GetMediaTypeByMediaCategoryStatic(mediaCategory));
 
-            var response = Operations.APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=INIT", APIHandler.Method.POST, parameters);
 
             var media_data = new MediaData(JObject.Parse(response.Result));
 
             return media_data;
         }
 
-        /// <summary>
-        /// Upload Custom media from url and MediaCategory enum
-        /// </summary>
-        public async Task<MediaData> UploadCustomMediaFromURLAsync(string url, MediaCategory mediaCategory)
+        public async Task<MediaData> UploadCustomMediaINITAsync(long file_size_bytes, MediaCategory mediaCategory)
         {
             var parameters = new Dictionary<string, object> { };
-
-            using (var client = new WebClient())
-            {
-                byte[] dataBytes = client.DownloadData(new Uri(url));
-                string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
-                parameters.Add("media_data", encodedFileAsBase64);
-            }
-
+            parameters.Add("total_bytes", file_size_bytes);
             parameters.Add("media_category", mediaCategory);
+            parameters.Add("media_type", GetMediaTypeByMediaCategory(mediaCategory));
 
-            var response = await APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
+            var response = await APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=INIT", APIHandler.Method.POST, parameters);
 
             var media_data = new MediaData(JObject.Parse(response));
+
+            return media_data;
+        }
+
+        public void UploadCustomMediaAPPEND(string encodedFileAsBase64, MediaData media_init)
+        {
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("segment_index", 0);
+            parameters.Add("media_data", encodedFileAsBase64);
+
+            _ = APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=APPEND&media_id=" + media_init.media_id, APIHandler.Method.POST, parameters);
+        }
+
+        public static void UploadCustomMediaAPPENDStatic(string encodedFileAsBase64, MediaData media_init)
+        {
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("segment_index", 0);
+            parameters.Add("media_data", encodedFileAsBase64);
+
+            _ = Operations.APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=APPEND&media_id=" + media_init.media_id, APIHandler.Method.POST, parameters);
+        }
+
+        public async Task UploadCustomMediaAPPENDAsync(string encodedFileAsBase64, MediaData media_init)
+        {
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("segment_index", 0);
+            parameters.Add("media_data", encodedFileAsBase64);
+
+            await APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=APPEND&media_id=" + media_init.media_id, APIHandler.Method.POST, parameters);
+        }
+
+        public MediaData UploadCustomMediaFINALIZE(MediaData media_append)
+        {
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("segment_index", 0);
+
+            var response = APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=FINALIZE&media_id=" + media_append.media_id, APIHandler.Method.POST, parameters);
+
+            var media_data = new MediaData(JObject.Parse(response.Result));
+
+            return media_data;
+        }
+
+        public static MediaData UploadCustomMediaFINALIZEStatic(MediaData media_append)
+        {
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("segment_index", 0);
+
+            var response = Operations.APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=FINALIZE&media_id=" + media_append.media_id, APIHandler.Method.POST, parameters);
+
+            var media_data = new MediaData(JObject.Parse(response.Result));
+
+            return media_data;
+        }
+
+        public async Task<MediaData> UploadCustomMediaFINALIZEAsync(MediaData media_append)
+        {
+            var parameters = new Dictionary<string, object> { };
+            parameters.Add("segment_index", 0);
+
+            var response = await APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json?command=FINALIZE&media_id=" + media_append.media_id, APIHandler.Method.POST, parameters);
+
+            var media_data = new MediaData(JObject.Parse(response));
+
+            return media_data;
+        }
+
+        /// <summary>
+        /// Upload Custom media from bytes and MediaCategory enum
+        /// </summary>
+        public MediaData UploadCustomMediaFromBytes(byte[] dataBytes, MediaCategory mediaCategory)
+        {
+            //Load File Data
+            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
+
+            //INIT Media call
+            var media_init = UploadCustomMediaINIT(dataBytes.Length, mediaCategory);
+
+            //APPEND Media call
+            UploadCustomMediaAPPEND(encodedFileAsBase64, media_init);
+
+            //FINALIZE Media call
+            var media_data = UploadCustomMediaFINALIZE(media_init);
+
+            return media_data;
+        }
+
+        /// <summary>
+        /// Upload Custom media from bytes and MediaCategory enum
+        /// </summary>
+        public static MediaData UploadCustomMediaFromBytesStatic(byte[] dataBytes, MediaCategory mediaCategory)
+        {
+            //Load File Data
+            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
+
+            //INIT Media call
+            var media_init = UploadCustomMediaINITStatic(dataBytes.Length, mediaCategory);
+
+            //APPEND Media call
+            UploadCustomMediaAPPENDStatic(encodedFileAsBase64, media_init);
+
+            //FINALIZE Media call
+            var media_data = UploadCustomMediaFINALIZEStatic(media_init);
+
+            return media_data;
+        }
+
+        /// <summary>
+        /// Upload Custom media from bytes and MediaCategory enum
+        /// </summary>
+        public async Task<MediaData> UploadCustomMediaFromBytesAsync(byte[] dataBytes, MediaCategory mediaCategory)
+        {
+            //Load File Data
+            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
+
+            //INIT Media call
+            var media_init = await UploadCustomMediaINITAsync(dataBytes.Length, mediaCategory);
+
+            //APPEND Media call
+            await UploadCustomMediaAPPENDAsync(encodedFileAsBase64, media_init);
+
+            //FINALIZE Media call
+            var media_data = await UploadCustomMediaFINALIZEAsync(media_init);
 
             return media_data;
         }
@@ -232,17 +328,10 @@ namespace TwitterOps.Operation.Media
         /// </summary>
         public MediaData UploadCustomMediaFromPath(string path, MediaCategory mediaCategory)
         {
+            //Load File Data
             byte[] dataBytes = File.ReadAllBytes(path);
-            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
 
-            var parameters = new Dictionary<string, object> { };
-            parameters.Add("media_data", encodedFileAsBase64);
-
-            parameters.Add("media_category", mediaCategory);
-
-            var response = APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
-
-            var media_data = new MediaData(JObject.Parse(response.Result));
+            var media_data = UploadCustomMediaFromBytes(dataBytes, mediaCategory);
 
             return media_data;
         }
@@ -252,17 +341,10 @@ namespace TwitterOps.Operation.Media
         /// </summary>
         public static MediaData UploadCustomMediaFromPathStatic(string path, MediaCategory mediaCategory)
         {
+            //Load File Data
             byte[] dataBytes = File.ReadAllBytes(path);
-            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
 
-            var parameters = new Dictionary<string, object> { };
-            parameters.Add("media_data", encodedFileAsBase64);
-
-            parameters.Add("media_category", mediaCategory);
-
-            var response = Operations.APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
-
-            var media_data = new MediaData(JObject.Parse(response.Result));
+            var media_data = UploadCustomMediaFromBytesStatic(dataBytes, mediaCategory);
 
             return media_data;
         }
@@ -272,76 +354,68 @@ namespace TwitterOps.Operation.Media
         /// </summary>
         public async Task<MediaData> UploadCustomMediaFromPathAsync(string path, MediaCategory mediaCategory)
         {
+            //Load File Data
             byte[] dataBytes = File.ReadAllBytes(path);
-            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
 
-            var parameters = new Dictionary<string, object> { };
-            parameters.Add("media_data", encodedFileAsBase64);
-
-            parameters.Add("media_category", mediaCategory);
-
-            var response = await APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
-
-            var media_data = new MediaData(JObject.Parse(response));
+            var media_data = await UploadCustomMediaFromBytesAsync(dataBytes, mediaCategory);
 
             return media_data;
         }
 
         /// <summary>
-        /// Upload Custom media bytes of file and MediaCategory enum
+        /// Upload Custom media from url and MediaCategory enum
         /// </summary>
-        public MediaData UploadCustomMediaFromBytes(byte[] dataBytes, MediaCategory mediaCategory)
+        public MediaData UploadCustomMediaFromURL(string url, MediaCategory mediaCategory)
         {
-            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
+            //Load File Bytes from URL
+            var client = new WebClient();
+            byte[] dataBytes = client.DownloadData(new Uri(url));
 
-            var parameters = new Dictionary<string, object> { };
-            parameters.Add("media_data", encodedFileAsBase64);
-
-            parameters.Add("media_category", mediaCategory);
-
-            var response = APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
-
-            var media_data = new MediaData(JObject.Parse(response.Result));
+            var media_data = UploadCustomMediaFromBytes(dataBytes, mediaCategory);
 
             return media_data;
         }
 
         /// <summary>
-        /// Upload Custom media bytes of file and MediaCategory enum
+        /// Upload Custom media from url and MediaCategory enum
         /// </summary>
-        public static MediaData UploadCustomMediaFromBytesStatic(byte[] dataBytes, MediaCategory mediaCategory)
+        public static MediaData UploadCustomMediaFromURLStatic(string url, MediaCategory mediaCategory)
         {
-            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
+            //Load File Bytes from URL
+            var client = new WebClient();
+            byte[] dataBytes = client.DownloadData(new Uri(url));
 
-            var parameters = new Dictionary<string, object> { };
-            parameters.Add("media_data", encodedFileAsBase64);
-
-            parameters.Add("media_category", mediaCategory);
-
-            var response = Operations.APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
-
-            var media_data = new MediaData(JObject.Parse(response.Result));
+            var media_data = UploadCustomMediaFromBytesStatic(dataBytes, mediaCategory);
 
             return media_data;
         }
 
         /// <summary>
-        /// Upload Custom media bytes of file and MediaCategory enum
+        /// Upload Custom media from url and MediaCategory enum
         /// </summary>
-        public async Task<MediaData> UploadCustomMediaFromBytesAsync(byte[] dataBytes, MediaCategory mediaCategory)
+        public async Task<MediaData> UploadCustomMediaFromURLAsync(string url, MediaCategory mediaCategory)
         {
-            string encodedFileAsBase64 = Convert.ToBase64String(dataBytes);
+            //Load File Bytes from URL
+            var client = new WebClient();
+            byte[] dataBytes = client.DownloadData(new Uri(url));
 
-            var parameters = new Dictionary<string, object> { };
-            parameters.Add("media_data", encodedFileAsBase64);
-
-            parameters.Add("media_category", mediaCategory);
-
-            var response = await APIHandler.requestAPIOAuthAsync("https://upload.twitter.com/1.1/media/upload.json", APIHandler.Method.POST, parameters);
-
-            var media_data = new MediaData(JObject.Parse(response));
+            var media_data = await UploadCustomMediaFromBytesAsync(dataBytes, mediaCategory);
 
             return media_data;
+        }
+
+
+
+        // ----------------------------------------------------------- Custom Operations -----------------------------------------------------------  //
+
+        private string GetMediaTypeByMediaCategory(MediaCategory mediaCategory)
+        {
+            return mediaCategory == MediaCategory.tweet_image ? "image/jpg" : mediaCategory == MediaCategory.tweet_video ? "video/mp4" : mediaCategory == MediaCategory.tweet_gif ? "image/gif" : null;
+        }
+
+        private static string GetMediaTypeByMediaCategoryStatic(MediaCategory mediaCategory)
+        {
+            return mediaCategory == MediaCategory.tweet_image ? "image/jpg" : mediaCategory == MediaCategory.tweet_video ? "video/mp4" : mediaCategory == MediaCategory.tweet_gif ? "image/gif" : null;
         }
     }
 }
