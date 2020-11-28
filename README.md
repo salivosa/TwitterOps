@@ -56,9 +56,6 @@ The declared **ops** variable can be used for any of the following operations. I
 - #### Post a Tweet
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Execute a task
 var tweet = ops.Tweets.PostTweet("This is a automated tweet!");
 ```
@@ -66,9 +63,6 @@ var tweet = ops.Tweets.PostTweet("This is a automated tweet!");
 - #### Post a Tweet with image
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Post tweet with URL of image
 var tweet = ops.Tweets.PostTweetWithImageURL("kimika is cute!", "https://pbs.twimg.com/media/EnyWXkFWEAETjMA?format=jpg&name=small");
 
@@ -82,9 +76,6 @@ var tweet3 = ops.Tweets.PostTweetWithImagePath(@"D:\STUFF\Waiff\2d waifus\2020\a
 - #### Post a Tweet with media
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Load media
 var media = ops.Media.UploadCustomMediaFromPath(@"C:\Users\salivosa\Downloads\testo1.mp4", TwitterOps.Operation.Media.MediaData.MediaCategory.tweet_video);
 
@@ -103,9 +94,6 @@ I'd recommend only using it with videos or gifs, with images **PostTweetWithImag
 - #### Post a Thread
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Execute a task
 var thread = ops.Tweets.PostThread(@"Once upon a time there was a lovely princess. But she had an enchantment upon her of a fearful sort which could only be broken by love's first kiss. She was locked away in a castle guarded by a terrible fire-breathing dragon. Many brave knights had attempted to free her from this dreadful prison, but non prevailed. She waited in the dragon's keep in the highest room of the tallest tower for her true love and true love's first kiss. (laughs) Like that's ever gonna happen. What a load of - (toilet flush)", false);
 ```
@@ -115,9 +103,6 @@ Second argument is a boolean which determines if the string can be splitted by d
 - #### Get a Tweet
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Execute a task
 var tweet = ops.Tweets.GetTweetById("1332104924184850432");
 ```
@@ -125,9 +110,6 @@ var tweet = ops.Tweets.GetTweetById("1332104924184850432");
 - #### Get Replies of a Tweet
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Get Tweet
 var tweet = ops.Tweets.GetTweetById("1332104924184850432");
 
@@ -138,9 +120,6 @@ var replies = tweet.replies;
 - #### Reply a Tweet
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Get Tweet
 var tweet = ops.Tweets.GetTweetById("1332104924184850432");
 
@@ -151,9 +130,6 @@ var reply = ops.Tweets.PostReplyTweet("agreed!", tweet);
 - #### Quote a Tweet
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Get Tweet
 var tweet = ops.Tweets.GetTweetById("1332104924184850432");
 
@@ -166,9 +142,6 @@ var quoted_tweet = ops.Tweets.PostTweetQuote("humillado!", tweet);
 - #### Get User information
 
 ```C#
-//Load module
-var ops = new Operations(consumerKey, consumerSecret, tokenValue, tokenSecret);
-
 //Get User by Username
 var user = ops.Users.GetUserByScreenName("realDonaldTrump");
 
